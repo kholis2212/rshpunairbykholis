@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Pemilik;
 
+use App\Http\Controllers\Controller;
 use App\Models\Pet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,6 +15,6 @@ class DashboardPemilikController extends Controller
         $pet = Pet::with('rasHewan')->whereHas('pemilik', function($q) {
             $q->where('iduser', Auth::id());
         })->get();
-        return view('dashboard.pemilik', compact('pet'));
+        return view('pemilik.dashboard-pemilik', compact('pet'));
     }
 }

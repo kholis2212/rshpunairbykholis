@@ -35,7 +35,7 @@ class User extends Authenticatable
     // Relasi: satu user memiliki banyak role_user
     public function roleUsers()
     {
-        return $this->hasMany(RoleUser::class, 'iduser', 'user_id');
+        return $this->hasMany(RoleUser::class, 'iduser', 'iduser');
     }
     
 }

@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\JenisHewan;
 use App\Models\RasHewan;
 use App\Models\Kategori;
@@ -24,6 +25,6 @@ class DashboardAdminController extends Controller
         $role = Role::all();
         $userRole = User::with('roleUsers.role')->get();
 
-        return view('dashboard.admin', compact('jenisHewan', 'rasHewan', 'kategori', 'kategoriKlinis', 'kodeTindakanTerapi', 'role', 'userRole'));
+        return view('admin.dashboard-admin', compact('jenisHewan', 'rasHewan', 'kategori', 'kategoriKlinis', 'kodeTindakanTerapi', 'role', 'userRole'));
     }
 }

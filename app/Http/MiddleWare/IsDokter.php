@@ -10,9 +10,21 @@ class IsDokter
 {
     public function handle(Request $request, Closure $next)
     {
-        if (Auth::check() && Auth::user()->roleUsers->first()->role->nama_role === 'Dokter') {
+        if (!Auth::check()) {
+            return redirect('/login')->with('error', 'Silakan login terlebih dahulu.');
+        }
+
+        $user = Auth::user();
+        $activeRole = $user->roleUsers->where('status', 1)->first();
+
+        if (!$activeRole) {
+            return redirect('/home')->with('error', 'Akun anda tidak terdaftar sebagai role aktif.');
+        }
+
+        if ($activeRole->role && $activeRole->role->nama_role === 'Dokter') {
             return $next($request);
         }
-        return redirect('/home')->with('error', 'Akses ditolak');
+
+        return redirect('/home')->with('error', 'Akses ditolak. Anda bukan Dokter.');
     }
 }

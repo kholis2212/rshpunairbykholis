@@ -10,17 +10,21 @@ class IsPemilik
 {
     public function handle(Request $request, Closure $next)
     {
-        if (Auth::check()) {
-            $user = Auth::user();
-            $roleUser = $user->roleUsers->first(); // ambil relasi pertama (bisa null)
-            
-            // Cek apakah user punya role dan namanya Pemilik
-            if ($roleUser && $roleUser->role && $roleUser->role->nama_role === 'Pemilik') {
-                return $next($request);
-            }
+        if (!Auth::check()) {
+            return redirect('/login')->with('error', 'Silakan login terlebih dahulu.');
         }
 
-        // Kalau belum login atau bukan Pemilik
-        return redirect('/home')->with('error', 'Akses ditolak');
+        $user = Auth::user();
+        $activeRole = $user->roleUsers->where('status', 1)->first();
+
+        if (!$activeRole) {
+            return redirect('/home')->with('error', 'Akun anda tidak terdaftar sebagai role aktif.');
+        }
+
+        if ($activeRole->role && $activeRole->role->nama_role === 'Pemilik') {
+            return $next($request);
+        }
+
+        return redirect('/home')->with('error', 'Akses ditolak. Anda bukan Pemilik.');
     }
 }
