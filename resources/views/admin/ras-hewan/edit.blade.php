@@ -1,53 +1,349 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Ras Hewan - RSHP UNAIR</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+{{-- views/admin/ras-hewan/edit.blade.php --}}
+@extends('layouts.lte.main')
+
+@section('title', 'Edit Ras Hewan - RSHP UNAIR')
+
+@section('page-icon', 'pencil-square')
+@section('page-title', 'Edit Ras Hewan')
+
+@section('breadcrumb')
+    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard-admin') }}">Dashboard</a></li>
+    <li class="breadcrumb-item"><a href="{{ route('admin.ras-hewan.index') }}">Data Ras Hewan</a></li>
+    <li class="breadcrumb-item active">Edit Data</li>
+@endsection
+
+@section('content')
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <!-- Current Value Card -->
+            <div class="current-value-card mb-4">
+                <div class="current-value-header">
+                    <div class="current-value-icon">
+                        <i class="bi bi-file-text-fill"></i>
+                    </div>
+                    <div class="current-value-text">
+                        <h6>Nilai Saat Ini</h6>
+                        <p>Data yang sedang aktif dalam sistem</p>
+                    </div>
+                </div>
+                <div class="current-value-grid">
+                    <div class="current-value-item">
+                        <div class="current-value-label">
+                            <i class="bi bi-tags-fill"></i>
+                            <span>Jenis Hewan</span>
+                        </div>
+                        <div class="current-value-display">
+                          @php
+                            $currentJenis = collect($jenisHewan)->firstWhere('idjenis_hewan', $rasHewan->idjenis_hewan);
+                          @endphp
+                           {{ $currentJenis ? $currentJenis->nama_jenis_hewan : '-' }}
+                        </div>
+                    </div>
+                    <div class="current-value-item">
+                        <div class="current-value-label">
+                            <i class="bi bi-paw-fill"></i>
+                            <span>Nama Ras</span>
+                        </div>
+                        <div class="current-value-display">
+                            {{ $rasHewan->nama_ras }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Warning Card -->
+            <div class="warning-card mb-4">
+                <div class="warning-card-icon">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                </div>
+                <div class="warning-card-content">
+                    <h6>Perhatian!</h6>
+                    <p>Pastikan kombinasi jenis hewan dan nama ras yang baru tidak duplikat dengan data yang sudah ada untuk menghindari konflik data dalam sistem</p>
+                </div>
+            </div>
+
+            <!-- Form Card -->
+            <div class="card form-card">
+                <div class="card-header">
+                    <div class="card-header-icon">
+                        <i class="bi bi-pencil-fill"></i>
+                    </div>
+                    <div class="card-header-text">
+                        <h5>Form Edit Ras Hewan</h5>
+                        <p>Perbarui data ras hewan dengan informasi yang benar</p>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <form action="{{ route('admin.ras-hewan.update', $rasHewan->idras_hewan) }}" method="POST" id="formEdit">
+                        @csrf
+                        @method('PUT')
+                        
+                        <div class="form-group">
+                            <label for="idjenis_hewan" class="form-label">
+                                <i class="bi bi-tags-fill me-2"></i>
+                                Jenis Hewan Baru
+                                <span class="required">*</span>
+                            </label>
+                            <div class="input-wrapper">
+                                <select id="idjenis_hewan" 
+                                        name="idjenis_hewan" 
+                                        class="form-control @error('idjenis_hewan') is-invalid @enderror">
+                                    <option value="">-- Pilih Jenis Hewan --</option>
+                                    @foreach($jenisHewan as $jenis)
+                                        <option value="{{ $jenis->idjenis_hewan }}" 
+                                            {{ old('idjenis_hewan', $rasHewan->idjenis_hewan) == $jenis->idjenis_hewan ? 'selected' : '' }}>
+                                            {{ $jenis->nama_jenis_hewan }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <div class="input-icon">
+                                    <i class="bi bi-chevron-down"></i>
+                                </div>
+                            </div>
+                            @error('idjenis_hewan')
+                                <div class="invalid-feedback d-flex align-items-center gap-2">
+                                    <i class="bi bi-exclamation-circle-fill"></i>
+                                    <span>{{ $message }}</span>
+                                </div>
+                            @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label for="nama_ras" class="form-label">
+                                <i class="bi bi-paw-fill me-2"></i>
+                                Nama Ras Baru
+                                <span class="required">*</span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="text" 
+                                       id="nama_ras" 
+                                       name="nama_ras" 
+                                       class="form-control @error('nama_ras') is-invalid @enderror" 
+                                       value="{{ old('nama_ras', $rasHewan->nama_ras) }}" 
+                                       placeholder="Masukkan nama ras baru"
+                                       autofocus>
+                                <div class="input-icon">
+                                    <i class="bi bi-tag-fill"></i>
+                                </div>
+                            </div>
+                            @error('nama_ras')
+                                <div class="invalid-feedback d-flex align-items-center gap-2">
+                                    <i class="bi bi-exclamation-circle-fill"></i>
+                                    <span>{{ $message }}</span>
+                                </div>
+                            @enderror
+                            <div class="form-hint">
+                                <i class="bi bi-info-circle-fill"></i>
+                                <span>Ubah nama ras hewan sesuai dengan kebutuhan sistem</span>
+                            </div>
+                        </div>
+
+                        <div class="comparison-section">
+                            <div class="comparison-header">
+                                <i class="bi bi-arrow-left-right"></i>
+                                <span>Perbandingan Data</span>
+                            </div>
+                            <div class="comparison-grid">
+                                <div class="comparison-item comparison-old">
+                                    <div class="comparison-label">
+                                        <i class="bi bi-file-text"></i>
+                                        <span>Data Lama</span>
+                                    </div>
+                                    <div class="comparison-content">
+                                        <div class="comparison-field">
+                                            <span class="field-label">Jenis Hewan:</span>
+                                            <span class="field-value">
+                                            {{ $rasHewan->nama_jenis_hewan ?? '-' }}
+                                            </span>
+                                        </div>
+                                        <div class="comparison-field">
+                                            <span class="field-label">Nama Ras:</span>
+                                            <span class="field-value">{{ $rasHewan->nama_ras }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="comparison-arrow">
+                                    <i class="bi bi-arrow-right"></i>
+                                </div>
+                                <div class="comparison-item comparison-new">
+                                    <div class="comparison-label">
+                                        <i class="bi bi-file-earmark-check"></i>
+                                        <span>Data Baru</span>
+                                    </div>
+                                    <div class="comparison-content">
+                                        <div class="comparison-field">
+                                            <span class="field-label">Jenis Hewan:</span>
+                                            <span class="field-value" id="newJenisPreview">
+                                                @php
+                                                    $selectedJenis = $jenisHewan->firstWhere('idjenis_hewan', old('idjenis_hewan', $rasHewan->idjenis_hewan));
+                                                    echo $selectedJenis ? $selectedJenis->nama_jenis_hewan : $rasHewan->jenisHewan->nama_jenis_hewan;
+                                                @endphp
+                                            </span>
+                                        </div>
+                                        <div class="comparison-field">
+                                            <span class="field-label">Nama Ras:</span>
+                                            <span class="field-value" id="newRasPreview">
+                                                {{ old('nama_ras', $rasHewan->nama_ras) }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary btn-submit">
+                                <i class="bi bi-check-circle-fill"></i>
+                                <span>Update Data</span>
+                            </button>
+                            <a href="{{ route('admin.ras-hewan.index') }}" class="btn btn-secondary btn-cancel">
+                                <i class="bi bi-x-circle-fill"></i>
+                                <span>Batal</span>
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        /* Current Value Card */
+        .current-value-card {
+            background: linear-gradient(135deg, #f0f9ff, #e3f2fd);
+            border: 2px solid #0077b6;
+            border-radius: 15px;
+            overflow: hidden;
+            animation: slideDown 0.5s ease;
         }
 
-        :root {
-            --primary: #0077b6;
-            --primary-dark: #023e8a;
-            --secondary: #00b4d8;
-            --accent: #ffc300;
-            --success: #06d6a0;
-            --danger: #ef476f;
-            --warning: #ffa500;
-            --light-bg: #f8fbff;
-            --white: #ffffff;
-            --text-dark: #1a1a2e;
-            --text-gray: #4a5568;
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #0077b6 0%, #023e8a 100%);
-            min-height: 100vh;
-            padding: 30px;
+        .current-value-header {
+            background: linear-gradient(135deg, #0077b6, #0096c7);
+            color: white;
+            padding: 20px 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .current-value-icon {
+            width: 45px;
+            height: 45px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 1.3rem;
+            backdrop-filter: blur(10px);
         }
 
-        .container {
-            max-width: 700px;
-            width: 100%;
+        .current-value-text h6 {
+            margin: 0 0 3px 0;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .current-value-text p {
+            margin: 0;
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        .current-value-grid {
+            padding: 25px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .current-value-item {
+            background: white;
+            border: 2px solid #0077b6;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .current-value-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 12px;
+        }
+
+        .current-value-label i {
+            color: #0077b6;
+            font-size: 1rem;
+        }
+
+        .current-value-display {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #023e8a;
+            word-break: break-word;
+        }
+
+        /* Warning Card */
+        .warning-card {
+            background: linear-gradient(135deg, rgba(255, 165, 0, 0.05), rgba(255, 140, 0, 0.05));
+            border: 2px solid rgba(255, 165, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px 25px;
+            display: flex;
+            align-items: start;
+            gap: 20px;
+            animation: slideDown 0.6s ease;
+        }
+
+        .warning-card-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #ffa500, #ff8c00);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .warning-card-content h6 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #ff8c00;
+            margin: 0 0 5px 0;
+        }
+
+        .warning-card-content p {
+            font-size: 0.9rem;
+            color: var(--text-gray);
+            margin: 0;
+            line-height: 1.6;
         }
 
         /* Form Card */
         .form-card {
-            background: var(--white);
+            border: none;
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 10px 40px rgba(255, 165, 0, 0.15);
             overflow: hidden;
-            animation: slideUp 0.5s ease;
+            animation: slideUp 0.7s ease;
         }
 
         @keyframes slideUp {
@@ -61,86 +357,81 @@
             }
         }
 
-        .form-header {
-            background: linear-gradient(135deg, var(--warning), #ff8c00);
-            color: var(--white);
-            padding: 35px 40px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
+        .form-card .card-header {
+            background: linear-gradient(135deg, #ffa500, #ff8c00);
+            color: white;
+            padding: 30px;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 20px;
         }
 
-        .form-header::before {
-            content: "";
-            position: absolute;
-            top: -50%;
-            right: -20%;
-            width: 300px;
-            height: 300px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-        }
-
-        .form-header-icon {
-            width: 80px;
-            height: 80px;
+        .card-header-icon {
+            width: 60px;
+            height: 60px;
             background: rgba(255, 255, 255, 0.2);
-            border-radius: 20px;
+            border-radius: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 3rem;
-            margin: 0 auto 20px;
+            font-size: 2rem;
+            flex-shrink: 0;
             backdrop-filter: blur(10px);
         }
 
-        .form-header h1 {
-            font-size: 1.8rem;
+        .card-header-text h5 {
+            margin: 0 0 5px 0;
+            font-size: 1.4rem;
             font-weight: 700;
-            margin-bottom: 8px;
         }
 
-        .form-header p {
-            font-size: 0.95rem;
+        .card-header-text p {
+            margin: 0;
+            font-size: 0.9rem;
             opacity: 0.9;
         }
 
-        .form-body {
+        .form-card .card-body {
             padding: 40px;
         }
 
+        /* Form Styles */
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 30px;
         }
 
-        .form-group label {
-            display: block;
-            margin-bottom: 10px;
-            color: var(--text-dark);
-            font-weight: 600;
+        .form-label {
             font-size: 0.95rem;
+            font-weight: 700;
+            color: #023e8a;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
         }
 
         .required {
-            color: var(--danger);
-            margin-left: 3px;
+            color: #ef476f;
+            margin-left: 5px;
+            font-size: 1.1rem;
+        }
+
+        .input-wrapper {
+            position: relative;
         }
 
         .form-control {
-            width: 100%;
-            padding: 14px 18px;
+            padding: 14px 50px 14px 18px;
             border: 2px solid #e8e8e8;
             border-radius: 12px;
             font-size: 0.95rem;
-            font-family: 'Poppins', sans-serif;
             transition: all 0.3s ease;
-            background: var(--light-bg);
+            background: #f8fbff;
         }
 
         .form-control:focus {
-            outline: none;
-            border-color: var(--warning);
-            background: var(--white);
+            border-color: #ffa500;
+            background: white;
             box-shadow: 0 0 0 4px rgba(255, 165, 0, 0.1);
         }
 
@@ -149,58 +440,36 @@
         }
 
         select.form-control {
-            cursor: pointer;
             appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23ffa500' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 15px center;
-            background-size: 20px;
-            padding-right: 45px;
+            cursor: pointer;
         }
 
         .input-icon {
-            position: relative;
-        }
-
-        .input-icon input {
-            padding-left: 48px;
-        }
-
-        .input-icon::before {
-            content: "🐕";
             position: absolute;
-            left: 18px;
+            right: 18px;
             top: 50%;
             transform: translateY(-50%);
-            font-size: 1.3rem;
-        }
-
-        .select-icon {
-            position: relative;
-        }
-
-        .select-icon select {
-            padding-left: 48px;
-        }
-
-        .select-icon::before {
-            content: "🐾";
-            position: absolute;
-            left: 18px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 1.3rem;
-            z-index: 1;
+            color: #ffa500;
+            font-size: 1.2rem;
             pointer-events: none;
         }
 
-        .error-message {
-            color: var(--danger);
+        .form-control.is-invalid {
+            border-color: #ef476f;
+            background: #fff5f5;
+            padding-right: 50px;
+        }
+
+        .form-control.is-invalid:focus {
+            box-shadow: 0 0 0 4px rgba(239, 71, 111, 0.1);
+        }
+
+        .invalid-feedback {
+            color: #ef476f;
             font-size: 0.85rem;
+            font-weight: 600;
             margin-top: 8px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
+            display: flex !important;
             animation: shake 0.4s ease;
         }
 
@@ -210,264 +479,317 @@
             75% { transform: translateX(10px); }
         }
 
-        .error-message::before {
-            content: "⚠️";
-        }
-
-        .form-control.error {
-            border-color: var(--danger);
-            background: #fff5f5;
-        }
-
-        .form-actions {
+        .form-hint {
+            background: #fff8e6;
+            border-left: 3px solid #ffa500;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-top: 12px;
             display: flex;
-            gap: 15px;
-            margin-top: 35px;
-        }
-
-        .btn {
-            flex: 1;
-            padding: 14px 30px;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 1rem;
-            text-decoration: none;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
+            align-items: start;
             gap: 10px;
+            color: var(--text-gray);
+            font-size: 0.85rem;
+            line-height: 1.5;
         }
 
-        .btn-warning {
-            background: linear-gradient(135deg, var(--warning), #ff8c00);
-            color: var(--white);
-            box-shadow: 0 5px 20px rgba(255, 165, 0, 0.3);
+        .form-hint i {
+            color: #ffa500;
+            font-size: 1rem;
+            margin-top: 2px;
         }
 
-        .btn-warning:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(255, 165, 0, 0.4);
+        /* Comparison Section */
+        .comparison-section {
+            background: #f8fbff;
+            border: 2px dashed #0077b6;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
         }
 
-        .btn-secondary {
-            background: var(--light-bg);
-            color: var(--text-dark);
+        .comparison-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #023e8a;
+            margin-bottom: 20px;
+        }
+
+        .comparison-header i {
+            color: #0077b6;
+            font-size: 1.2rem;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        .comparison-item {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            height: 100%;
+        }
+
+        .comparison-old {
             border: 2px solid #e8e8e8;
         }
 
-        .btn-secondary:hover {
+        .comparison-new {
+            border: 2px solid #06d6a0;
+        }
+
+        .comparison-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .comparison-label i {
+            font-size: 1rem;
+        }
+
+        .comparison-old .comparison-label {
+            color: #ef476f;
+        }
+
+        .comparison-old .comparison-label i {
+            color: #ef476f;
+        }
+
+        .comparison-new .comparison-label {
+            color: #06d6a0;
+        }
+
+        .comparison-new .comparison-label i {
+            color: #06d6a0;
+        }
+
+        .comparison-content {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .comparison-field {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .field-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #4a5568;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .field-value {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #023e8a;
+            word-break: break-word;
+        }
+
+        .comparison-arrow {
+            color: #0077b6;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            padding-top: 40px;
+        }
+
+        /* Form Actions */
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #f8fbff;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #ffa500, #ff8c00);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(255, 165, 0, 0.3);
+            flex: 1;
+            justify-content: center;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 165, 0, 0.4);
+        }
+
+        .btn-cancel {
+            background: #f8fbff;
+            color: #4a5568;
+            border: 2px solid #e8e8e8;
+            padding: 12px 30px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .btn-cancel:hover {
             background: #e8e8e8;
             transform: translateY(-2px);
-        }
-
-        .form-hint {
-            background: #fff8e6;
-            border-left: 4px solid var(--warning);
-            padding: 15px 20px;
-            border-radius: 8px;
-            margin-bottom: 25px;
-            color: var(--text-gray);
-            font-size: 0.9rem;
-            display: flex;
-            align-items: start;
-            gap: 12px;
-        }
-
-        .form-hint::before {
-            content: "⚠️";
-            font-size: 1.3rem;
-        }
-
-        .current-value {
-            background: #f0f9ff;
-            border: 2px solid var(--primary);
-            border-radius: 12px;
-            padding: 15px 20px;
-            margin-bottom: 25px;
-        }
-
-        .current-value-label {
-            font-size: 0.85rem;
-            color: var(--text-gray);
-            font-weight: 500;
-            margin-bottom: 8px;
-        }
-
-        .current-value-text {
-            font-size: 1.1rem;
-            color: var(--primary-dark);
-            font-weight: 700;
-        }
-
-        .current-values-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 25px;
+            color: #4a5568;
         }
 
         /* Responsive */
         @media (max-width: 768px) {
-            body {
-                padding: 15px;
+            .current-value-header,
+            .warning-card {
+                flex-direction: column;
+                text-align: center;
             }
 
-            .form-header {
-                padding: 30px 25px;
+            .current-value-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
             }
 
-            .form-header h1 {
-                font-size: 1.5rem;
+            .form-card .card-header {
+                flex-direction: column;
+                text-align: center;
+                padding: 25px 20px;
             }
 
-            .form-body {
-                padding: 30px 25px;
+            .form-card .card-body {
+                padding: 30px 20px;
+            }
+
+            .comparison-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .comparison-arrow {
+                transform: rotate(90deg);
+                padding: 0;
+                height: auto;
             }
 
             .form-actions {
                 flex-direction: column;
             }
 
-            .btn {
+            .btn-submit,
+            .btn-cancel {
                 width: 100%;
-            }
-
-            .current-values-grid {
-                grid-template-columns: 1fr;
             }
         }
     </style>
-</head>
-<body>
-    <div class="container">
-        <div class="form-card">
-            <!-- Header -->
-            <div class="form-header">
-                <div class="form-header-icon">✏️</div>
-                <h1>Edit Ras Hewan</h1>
-                <p>Perbarui data ras hewan yang sudah ada</p>
-            </div>
+@endsection
 
-            <!-- Body -->
-            <div class="form-body">
-                <div class="current-values-grid">
-                    <div class="current-value">
-                        <div class="current-value-label">📝 Jenis Hewan Saat Ini:</div>
-                        <div class="current-value-text">{{ $rasHewan->jenisHewan->nama_jenis_hewan }}</div>
-                    </div>
-                    <div class="current-value">
-                        <div class="current-value-label">📝 Nama Ras Saat Ini:</div>
-                        <div class="current-value-text">{{ $rasHewan->nama_ras }}</div>
-                    </div>
-                </div>
-
-                <div class="form-hint">
-                    <span>Pastikan kombinasi jenis hewan dan nama ras yang baru tidak duplikat dengan data yang sudah ada</span>
-                </div>
-
-                <form action="{{ route('admin.ras-hewan.update', $rasHewan->idras_hewan) }}" method="POST">
-                    @csrf
-                    @method('PUT')
-                    
-                    <div class="form-group">
-                        <label for="idjenis_hewan">
-                            Jenis Hewan
-                            <span class="required">*</span>
-                        </label>
-                        <div class="select-icon">
-                            <select id="idjenis_hewan" 
-                                    name="idjenis_hewan" 
-                                    class="form-control @error('idjenis_hewan') error @enderror">
-                                <option value="">-- Pilih Jenis Hewan --</option>
-                                @foreach($jenisHewan as $jenis)
-                                    <option value="{{ $jenis->idjenis_hewan }}" 
-                                        {{ old('idjenis_hewan', $rasHewan->idjenis_hewan) == $jenis->idjenis_hewan ? 'selected' : '' }}>
-                                        {{ $jenis->nama_jenis_hewan }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        @error('idjenis_hewan')
-                            <div class="error-message">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="form-group">
-                        <label for="nama_ras">
-                            Nama Ras Baru
-                            <span class="required">*</span>
-                        </label>
-                        <div class="input-icon">
-                            <input type="text" 
-                                   id="nama_ras" 
-                                   name="nama_ras" 
-                                   class="form-control @error('nama_ras') error @enderror" 
-                                   value="{{ old('nama_ras', $rasHewan->nama_ras) }}" 
-                                   placeholder="Masukkan nama ras baru"
-                                   autofocus>
-                        </div>
-                        @error('nama_ras')
-                            <div class="error-message">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-warning">
-                            <span>💾</span>
-                            <span>Update Data</span>
-                        </button>
-                        <a href="{{ route('admin.ras-hewan.index') }}" class="btn btn-secondary">
-                            <span>↩️</span>
-                            <span>Kembali</span>
-                        </a>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
+@section('extra-js')
     <script>
-        // Auto focus on input
-        document.getElementById('nama_ras').focus();
+        // Auto focus and select all text
+        const inputRas = document.getElementById('nama_ras');
+        inputRas.focus();
+        inputRas.select();
 
-        // Select all text on focus
-        document.getElementById('nama_ras').addEventListener('focus', function() {
-            this.select();
+        // Live preview of new values
+        inputRas.addEventListener('input', function() {
+            const newValue = this.value.trim() || '{{ $rasHewan->nama_ras }}';
+            document.getElementById('newRasPreview').textContent = newValue;
+        });
+
+        document.getElementById('idjenis_hewan').addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const newValue = selectedOption.text || '-';
+            document.getElementById('newJenisPreview').textContent = newValue;
         });
 
         // Form validation before submit
-        document.querySelector('form').addEventListener('submit', function(e) {
+        document.getElementById('formEdit').addEventListener('submit', function(e) {
             const selectJenis = document.getElementById('idjenis_hewan');
-            const inputRas = document.getElementById('nama_ras');
             let hasError = false;
 
             if (selectJenis.value === '') {
-                selectJenis.classList.add('error');
+                selectJenis.classList.add('is-invalid');
                 hasError = true;
             }
 
             if (inputRas.value.trim() === '') {
-                inputRas.classList.add('error');
+                inputRas.classList.add('is-invalid');
                 hasError = true;
             }
 
             if (hasError) {
                 e.preventDefault();
-                selectJenis.focus();
+                
+                // Tambahkan pesan error custom jika belum ada
+                if (selectJenis.value === '' && !selectJenis.parentNode.querySelector('.invalid-feedback')) {
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'invalid-feedback d-flex align-items-center gap-2';
+                    errorDiv.innerHTML = '<i class="bi bi-exclamation-circle-fill"></i><span>Jenis hewan wajib dipilih!</span>';
+                    selectJenis.parentNode.appendChild(errorDiv);
+                }
+
+                if (inputRas.value.trim() === '' && !inputRas.parentNode.querySelector('.invalid-feedback')) {
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'invalid-feedback d-flex align-items-center gap-2';
+                    errorDiv.innerHTML = '<i class="bi bi-exclamation-circle-fill"></i><span>Nama ras wajib diisi!</span>';
+                    inputRas.parentNode.appendChild(errorDiv);
+                }
+
+                if (selectJenis.value === '') {
+                    selectJenis.focus();
+                } else {
+                    inputRas.focus();
+                }
             }
         });
 
         // Remove error class on change/input
         document.getElementById('idjenis_hewan').addEventListener('change', function() {
-            this.classList.remove('error');
+            this.classList.remove('is-invalid');
+            // Hapus pesan error custom jika ada
+            const customError = this.parentNode.querySelector('.invalid-feedback');
+            if (customError && !this.parentNode.querySelector('.is-invalid')) {
+                customError.remove();
+            }
         });
 
-        document.getElementById('nama_ras').addEventListener('input', function() {
-            this.classList.remove('error');
+        inputRas.addEventListener('input', function() {
+            this.classList.remove('is-invalid');
+            // Hapus pesan error custom jika ada
+            const customError = this.parentNode.querySelector('.invalid-feedback');
+            if (customError && !this.parentNode.querySelector('.is-invalid')) {
+                customError.remove();
+            }
         });
     </script>
-</body>
-</html>
+@endsection

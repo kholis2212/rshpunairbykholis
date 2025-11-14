@@ -3,17 +3,20 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Kategori;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class KategoriController extends Controller
 {
     /**
-     * Menampilkan daftar kategori
+     * Menampilkan daftar kategori menggunakan Query Builder
      */
     public function index()
     {
-        $kategori = Kategori::all();
+        $kategori = DB::table('kategori')
+                     ->orderBy('nama_kategori', 'asc')
+                     ->get();
+        
         return view('admin.kategori.index', compact('kategori'));
     }
 
@@ -26,7 +29,7 @@ class KategoriController extends Controller
     }
 
     /**
-     * Menyimpan data kategori
+     * Menyimpan data kategori menggunakan Query Builder
      */
     public function store(Request $request)
     {
@@ -34,61 +37,93 @@ class KategoriController extends Controller
         $validatedData = $this->validateKategori($request);
         
         // Format nama kategori
-        $validatedData['nama_kategori'] = $this->formatNamaKategori($validatedData['nama_kategori']);
+        $namaKategori = $this->formatNamaKategori($validatedData['nama_kategori']);
         
-        // Simpan data
-        Kategori::create($validatedData);
+        // Query Builder: Insert data ke table kategori TANPA timestamp
+        DB::table('kategori')->insert([
+            'nama_kategori' => $namaKategori
+            // Hapus created_at dan updated_at karena kolom tidak ada di database
+        ]);
         
         return redirect()->route('admin.kategori.index')
                         ->with('success', 'Data kategori berhasil ditambahkan!');
     }
 
     /**
-     * Menampilkan form edit
+     * Menampilkan form edit menggunakan Query Builder
      */
     public function edit($id)
     {
-        $kategori = Kategori::findOrFail($id);
+        $kategori = DB::table('kategori')
+                     ->where('idkategori', $id)
+                     ->first();
+        
+        if (!$kategori) {
+            return redirect()->route('admin.kategori.index')
+                           ->with('error', 'Data tidak ditemukan!');
+        }
+        
         return view('admin.kategori.edit', compact('kategori'));
     }
 
     /**
-     * Update data kategori
+     * Update data kategori menggunakan Query Builder
      */
     public function update(Request $request, $id)
     {
-        // Validasi input, kecuali ID yang sedang diedit
+        // Cek apakah nama sudah ada (kecuali untuk ID yang sedang diedit)
+        $exists = DB::table('kategori')
+                   ->where('nama_kategori', $request->nama_kategori)
+                   ->where('idkategori', '!=', $id)
+                   ->exists();
+        
+        if ($exists) {
+            return redirect()->back()
+                           ->withErrors(['nama_kategori' => 'Nama kategori sudah ada dalam database!'])
+                           ->withInput();
+        }
+        
+        // Validasi input
         $validatedData = $request->validate([
-            'nama_kategori' => 'required|string|max:255|unique:kategori,nama_kategori,' . $id . ',idkategori',
+            'nama_kategori' => 'required|string|max:255',
         ], [
             'nama_kategori.required' => 'Nama kategori wajib diisi!',
             'nama_kategori.string' => 'Nama kategori harus berupa teks!',
             'nama_kategori.max' => 'Nama kategori maksimal 255 karakter!',
-            'nama_kategori.unique' => 'Nama kategori sudah ada dalam database!',
         ]);
         
         // Format nama kategori
-        $validatedData['nama_kategori'] = $this->formatNamaKategori($validatedData['nama_kategori']);
+        $namaKategori = $this->formatNamaKategori($validatedData['nama_kategori']);
         
-        // Update data
-        $kategori = Kategori::findOrFail($id);
-        $kategori->update($validatedData);
+        // Query Builder: Update data TANPA updated_at
+        DB::table('kategori')
+          ->where('idkategori', $id)
+          ->update([
+              'nama_kategori' => $namaKategori
+              // Hapus updated_at karena kolom tidak ada di database
+          ]);
         
         return redirect()->route('admin.kategori.index')
                         ->with('success', 'Data kategori berhasil diperbarui!');
     }
 
     /**
-     * Hapus data kategori
+     * Hapus data kategori menggunakan Query Builder
      */
     public function destroy($id)
     {
         try {
-            $kategori = Kategori::findOrFail($id);
-            $kategori->delete();
+            $deleted = DB::table('kategori')
+                        ->where('idkategori', $id)
+                        ->delete();
             
-            return redirect()->route('admin.kategori.index')
-                            ->with('success', 'Data kategori berhasil dihapus!');
+            if ($deleted) {
+                return redirect()->route('admin.kategori.index')
+                                ->with('success', 'Data kategori berhasil dihapus!');
+            } else {
+                return redirect()->route('admin.kategori.index')
+                                ->with('error', 'Data tidak ditemukan!');
+            }
         } catch (\Exception $e) {
             return redirect()->route('admin.kategori.index')
                             ->with('error', 'Gagal menghapus data! Data mungkin masih digunakan di tabel lain.');
@@ -100,13 +135,23 @@ class KategoriController extends Controller
      */
     private function validateKategori(Request $request)
     {
+        // Cek apakah nama sudah ada
+        $exists = DB::table('kategori')
+                   ->where('nama_kategori', $request->nama_kategori)
+                   ->exists();
+        
+        if ($exists) {
+            return redirect()->back()
+                           ->withErrors(['nama_kategori' => 'Nama kategori sudah ada dalam database!'])
+                           ->withInput();
+        }
+        
         return $request->validate([
-            'nama_kategori' => 'required|string|max:255|unique:kategori,nama_kategori',
+            'nama_kategori' => 'required|string|max:255',
         ], [
             'nama_kategori.required' => 'Nama kategori wajib diisi!',
             'nama_kategori.string' => 'Nama kategori harus berupa teks!',
             'nama_kategori.max' => 'Nama kategori maksimal 255 karakter!',
-            'nama_kategori.unique' => 'Nama kategori sudah ada dalam database!',
         ]);
     }
 
@@ -116,5 +161,46 @@ class KategoriController extends Controller
     private function formatNamaKategori(string $nama)
     {
         return ucwords(strtolower($nama));
+    }
+
+    /**
+     * QUERY BUILDER LAINNYA 
+     */
+    
+    // 1. Count total kategori
+    public function countKategori()
+    {
+        $count = DB::table('kategori')->count();
+        return $count;
+    }
+    
+    // 2. Cari kategori berdasarkan keyword
+    public function searchKategori($keyword)
+    {
+        $results = DB::table('kategori')
+                    ->where('nama_kategori', 'like', '%' . $keyword . '%')
+                    ->get();
+        return $results;
+    }
+    
+    // 3. Ambil 5 kategori terbaru (tanpa created_at, gunakan ID sebagai referensi)
+    public function getLatestKategori()
+    {
+        $latest = DB::table('kategori')
+                   ->orderBy('idkategori', 'desc')
+                   ->limit(5)
+                   ->get();
+        return $latest;
+    }
+    
+    // 4. Join dengan table layanan
+    public function getKategoriWithLayanan()
+    {
+        $data = DB::table('kategori')
+                 ->leftJoin('layanan', 'kategori.idkategori', '=', 'layanan.idkategori')
+                 ->select('kategori.nama_kategori', DB::raw('COUNT(layanan.idlayanan) as total_layanan'))
+                 ->groupBy('kategori.idkategori', 'kategori.nama_kategori')
+                 ->get();
+        return $data;
     }
 }

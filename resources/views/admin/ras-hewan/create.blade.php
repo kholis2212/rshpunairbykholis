@@ -1,52 +1,180 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tambah Ras Hewan - RSHP UNAIR</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+{{-- views/admin/ras-hewan/create.blade.php --}}
+@extends('layouts.lte.main')
+
+@section('title', 'Tambah Ras Hewan - RSHP UNAIR')
+
+@section('page-icon', 'plus-circle-fill')
+@section('page-title', 'Tambah Ras Hewan')
+
+@section('breadcrumb')
+    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard-admin') }}">Dashboard</a></li>
+    <li class="breadcrumb-item"><a href="{{ route('admin.ras-hewan.index') }}">Data Ras Hewan</a></li>
+    <li class="breadcrumb-item active">Tambah Data</li>
+@endsection
+
+@section('content')
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <!-- Info Card -->
+            <div class="info-card mb-4">
+                <div class="info-card-icon">
+                    <i class="bi bi-lightbulb-fill"></i>
+                </div>
+                <div class="info-card-content">
+                    <h6>Informasi</h6>
+                    <p>Pastikan kombinasi jenis hewan dan nama ras yang Anda masukkan belum terdaftar dalam sistem untuk menghindari duplikasi data</p>
+                </div>
+            </div>
+
+            <!-- Form Card -->
+            <div class="card form-card">
+                <div class="card-header">
+                    <div class="card-header-icon">
+                        <i class="bi bi-file-earmark-plus-fill"></i>
+                    </div>
+                    <div class="card-header-text">
+                        <h5>Form Tambah Ras Hewan</h5>
+                        <p>Isi formulir di bawah dengan lengkap dan benar</p>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <form action="{{ route('admin.ras-hewan.store') }}" method="POST" id="formCreate">
+                        @csrf
+                        
+                        <div class="form-group">
+                            <label for="idjenis_hewan" class="form-label">
+                                <i class="bi bi-tags-fill me-2"></i>
+                                Jenis Hewan
+                                <span class="required">*</span>
+                            </label>
+                            <div class="input-wrapper">
+                                <select id="idjenis_hewan" 
+                                        name="idjenis_hewan" 
+                                        class="form-control @error('idjenis_hewan') is-invalid @enderror">
+                                    <option value="">-- Pilih Jenis Hewan --</option>
+                                    @foreach($jenisHewan as $jenis)
+                                        <option value="{{ $jenis->idjenis_hewan }}" {{ old('idjenis_hewan') == $jenis->idjenis_hewan ? 'selected' : '' }}>
+                                            {{ $jenis->nama_jenis_hewan }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <div class="input-icon">
+                                    <i class="bi bi-chevron-down"></i>
+                                </div>
+                            </div>
+                            @error('idjenis_hewan')
+                                <div class="invalid-feedback d-flex align-items-center gap-2">
+                                    <i class="bi bi-exclamation-circle-fill"></i>
+                                    <span>{{ $message }}</span>
+                                </div>
+                            @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label for="nama_ras" class="form-label">
+                                <i class="bi bi-paw-fill me-2"></i>
+                                Nama Ras
+                                <span class="required">*</span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="text" 
+                                       id="nama_ras" 
+                                       name="nama_ras" 
+                                       class="form-control @error('nama_ras') is-invalid @enderror" 
+                                       value="{{ old('nama_ras') }}" 
+                                       placeholder="Contoh: Golden Retriever, Persia, Holland Lop"
+                                       autofocus>
+                                <div class="input-icon">
+                                    <i class="bi bi-tag-fill"></i>
+                                </div>
+                            </div>
+                            @error('nama_ras')
+                                <div class="invalid-feedback d-flex align-items-center gap-2">
+                                    <i class="bi bi-exclamation-circle-fill"></i>
+                                    <span>{{ $message }}</span>
+                                </div>
+                            @enderror
+                            <div class="form-hint">
+                                <i class="bi bi-info-circle-fill"></i>
+                                <span>Masukkan nama ras hewan yang spesifik dan mudah dikenali</span>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary btn-submit">
+                                <i class="bi bi-save-fill"></i>
+                                <span>Simpan Data</span>
+                            </button>
+                            <a href="{{ route('admin.ras-hewan.index') }}" class="btn btn-secondary btn-cancel">
+                                <i class="bi bi-x-circle-fill"></i>
+                                <span>Batal</span>
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        /* Info Card */
+        .info-card {
+            background: linear-gradient(135deg, rgba(0, 119, 182, 0.05), rgba(0, 150, 199, 0.05));
+            border: 2px solid rgba(0, 119, 182, 0.15);
+            border-radius: 15px;
+            padding: 20px 25px;
+            display: flex;
+            align-items: start;
+            gap: 20px;
+            animation: slideDown 0.5s ease;
         }
 
-        :root {
-            --primary: #0077b6;
-            --primary-dark: #023e8a;
-            --secondary: #00b4d8;
-            --accent: #ffc300;
-            --success: #06d6a0;
-            --danger: #ef476f;
-            --light-bg: #f8fbff;
-            --white: #ffffff;
-            --text-dark: #1a1a2e;
-            --text-gray: #4a5568;
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #0077b6 0%, #023e8a 100%);
-            min-height: 100vh;
-            padding: 30px;
+        .info-card-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #0077b6, #0096c7);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            flex-shrink: 0;
         }
 
-        .container {
-            max-width: 700px;
-            width: 100%;
+        .info-card-content h6 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #023e8a;
+            margin: 0 0 5px 0;
+        }
+
+        .info-card-content p {
+            font-size: 0.9rem;
+            color: var(--text-gray);
+            margin: 0;
+            line-height: 1.6;
         }
 
         /* Form Card */
         .form-card {
-            background: var(--white);
+            border: none;
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 10px 40px rgba(0, 119, 182, 0.12);
             overflow: hidden;
-            animation: slideUp 0.5s ease;
+            animation: slideUp 0.6s ease;
         }
 
         @keyframes slideUp {
@@ -60,86 +188,81 @@
             }
         }
 
-        .form-header {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: var(--white);
-            padding: 35px 40px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
+        .form-card .card-header {
+            background: linear-gradient(135deg, #0077b6, #0096c7);
+            color: white;
+            padding: 30px;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 20px;
         }
 
-        .form-header::before {
-            content: "";
-            position: absolute;
-            top: -50%;
-            right: -20%;
-            width: 300px;
-            height: 300px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-        }
-
-        .form-header-icon {
-            width: 80px;
-            height: 80px;
+        .card-header-icon {
+            width: 60px;
+            height: 60px;
             background: rgba(255, 255, 255, 0.2);
-            border-radius: 20px;
+            border-radius: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 3rem;
-            margin: 0 auto 20px;
+            font-size: 2rem;
+            flex-shrink: 0;
             backdrop-filter: blur(10px);
         }
 
-        .form-header h1 {
-            font-size: 1.8rem;
+        .card-header-text h5 {
+            margin: 0 0 5px 0;
+            font-size: 1.4rem;
             font-weight: 700;
-            margin-bottom: 8px;
         }
 
-        .form-header p {
-            font-size: 0.95rem;
+        .card-header-text p {
+            margin: 0;
+            font-size: 0.9rem;
             opacity: 0.9;
         }
 
-        .form-body {
+        .form-card .card-body {
             padding: 40px;
         }
 
+        /* Form Styles */
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 30px;
         }
 
-        .form-group label {
-            display: block;
-            margin-bottom: 10px;
-            color: var(--text-dark);
-            font-weight: 600;
+        .form-label {
             font-size: 0.95rem;
+            font-weight: 700;
+            color: #023e8a;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
         }
 
         .required {
-            color: var(--danger);
-            margin-left: 3px;
+            color: #ef476f;
+            margin-left: 5px;
+            font-size: 1.1rem;
+        }
+
+        .input-wrapper {
+            position: relative;
         }
 
         .form-control {
-            width: 100%;
-            padding: 14px 18px;
+            padding: 14px 50px 14px 18px;
             border: 2px solid #e8e8e8;
             border-radius: 12px;
             font-size: 0.95rem;
-            font-family: 'Poppins', sans-serif;
             transition: all 0.3s ease;
-            background: var(--light-bg);
+            background: #f8fbff;
         }
 
         .form-control:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: var(--white);
+            border-color: #0077b6;
+            background: white;
             box-shadow: 0 0 0 4px rgba(0, 119, 182, 0.1);
         }
 
@@ -148,58 +271,36 @@
         }
 
         select.form-control {
-            cursor: pointer;
             appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%230077b6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 15px center;
-            background-size: 20px;
-            padding-right: 45px;
+            cursor: pointer;
         }
 
         .input-icon {
-            position: relative;
-        }
-
-        .input-icon input {
-            padding-left: 48px;
-        }
-
-        .input-icon::before {
-            content: "🐕";
             position: absolute;
-            left: 18px;
+            right: 18px;
             top: 50%;
             transform: translateY(-50%);
-            font-size: 1.3rem;
-        }
-
-        .select-icon {
-            position: relative;
-        }
-
-        .select-icon select {
-            padding-left: 48px;
-        }
-
-        .select-icon::before {
-            content: "🐾";
-            position: absolute;
-            left: 18px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 1.3rem;
-            z-index: 1;
+            color: #0077b6;
+            font-size: 1.2rem;
             pointer-events: none;
         }
 
-        .error-message {
-            color: var(--danger);
+        .form-control.is-invalid {
+            border-color: #ef476f;
+            background: #fff5f5;
+            padding-right: 50px;
+        }
+
+        .form-control.is-invalid:focus {
+            box-shadow: 0 0 0 4px rgba(239, 71, 111, 0.1);
+        }
+
+        .invalid-feedback {
+            color: #ef476f;
             font-size: 0.85rem;
+            font-weight: 600;
             margin-top: 8px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
+            display: flex !important;
             animation: shake 0.4s ease;
         }
 
@@ -209,213 +310,146 @@
             75% { transform: translateX(10px); }
         }
 
-        .error-message::before {
-            content: "⚠️";
+        .form-hint {
+            background: #f0f9ff;
+            border-left: 3px solid #0077b6;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-top: 12px;
+            display: flex;
+            align-items: start;
+            gap: 10px;
+            color: var(--text-gray);
+            font-size: 0.85rem;
+            line-height: 1.5;
         }
 
-        .form-control.error {
-            border-color: var(--danger);
-            background: #fff5f5;
+        .form-hint i {
+            color: #0077b6;
+            font-size: 1rem;
+            margin-top: 2px;
         }
 
+        /* Form Actions */
         .form-actions {
             display: flex;
             gap: 15px;
-            margin-top: 35px;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #f8fbff;
         }
 
-        .btn {
-            flex: 1;
-            padding: 14px 30px;
+        .btn-submit {
+            background: linear-gradient(135deg, #0077b6, #0096c7);
+            color: white;
+            border: none;
+            padding: 12px 30px;
             border-radius: 12px;
             font-weight: 600;
             font-size: 1rem;
-            text-decoration: none;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
-            justify-content: center;
             gap: 10px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: var(--white);
+            transition: all 0.3s ease;
             box-shadow: 0 5px 20px rgba(0, 119, 182, 0.3);
+            flex: 1;
+            justify-content: center;
         }
 
-        .btn-primary:hover {
+        .btn-submit:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(0, 119, 182, 0.4);
+            box-shadow: 0 8px 25px rgba(0, 119, 182, 0.4);
         }
 
-        .btn-secondary {
-            background: var(--light-bg);
-            color: var(--text-dark);
+        .btn-cancel {
+            background: #f8fbff;
+            color: #4a5568;
             border: 2px solid #e8e8e8;
+            padding: 12px 30px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            flex: 1;
+            justify-content: center;
         }
 
-        .btn-secondary:hover {
+        .btn-cancel:hover {
             background: #e8e8e8;
             transform: translateY(-2px);
-        }
-
-        .form-hint {
-            background: #f0f9ff;
-            border-left: 4px solid var(--primary);
-            padding: 15px 20px;
-            border-radius: 8px;
-            margin-bottom: 25px;
-            color: var(--text-gray);
-            font-size: 0.9rem;
-            display: flex;
-            align-items: start;
-            gap: 12px;
-        }
-
-        .form-hint::before {
-            content: "💡";
-            font-size: 1.3rem;
+            color: #4a5568;
         }
 
         /* Responsive */
         @media (max-width: 768px) {
-            body {
-                padding: 15px;
+            .info-card {
+                flex-direction: column;
+                text-align: center;
             }
 
-            .form-header {
-                padding: 30px 25px;
+            .form-card .card-header {
+                flex-direction: column;
+                text-align: center;
+                padding: 25px 20px;
             }
 
-            .form-header h1 {
-                font-size: 1.5rem;
-            }
-
-            .form-body {
-                padding: 30px 25px;
+            .form-card .card-body {
+                padding: 30px 20px;
             }
 
             .form-actions {
                 flex-direction: column;
             }
 
-            .btn {
+            .btn-submit,
+            .btn-cancel {
                 width: 100%;
             }
         }
     </style>
-</head>
-<body>
-    <div class="container">
-        <div class="form-card">
-            <!-- Header -->
-            <div class="form-header">
-                <div class="form-header-icon">🐕</div>
-                <h1>Tambah Ras Hewan</h1>
-                <p>Isi formulir di bawah untuk menambah data ras hewan baru</p>
-            </div>
+@endsection
 
-            <!-- Body -->
-            <div class="form-body">
-                <div class="form-hint">
-                    <span>Pastikan kombinasi nama ras dan jenis hewan yang Anda masukkan belum terdaftar dalam sistem</span>
-                </div>
-
-                <form action="{{ route('admin.ras-hewan.store') }}" method="POST">
-                    @csrf
-                    
-                    <div class="form-group">
-                        <label for="idjenis_hewan">
-                            Jenis Hewan
-                            <span class="required">*</span>
-                        </label>
-                        <div class="select-icon">
-                            <select id="idjenis_hewan" 
-                                    name="idjenis_hewan" 
-                                    class="form-control @error('idjenis_hewan') error @enderror">
-                                <option value="">-- Pilih Jenis Hewan --</option>
-                                @foreach($jenisHewan as $jenis)
-                                    <option value="{{ $jenis->idjenis_hewan }}" {{ old('idjenis_hewan') == $jenis->idjenis_hewan ? 'selected' : '' }}>
-                                        {{ $jenis->nama_jenis_hewan }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        @error('idjenis_hewan')
-                            <div class="error-message">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="form-group">
-                        <label for="nama_ras">
-                            Nama Ras
-                            <span class="required">*</span>
-                        </label>
-                        <div class="input-icon">
-                            <input type="text" 
-                                   id="nama_ras" 
-                                   name="nama_ras" 
-                                   class="form-control @error('nama_ras') error @enderror" 
-                                   value="{{ old('nama_ras') }}" 
-                                   placeholder="Contoh: Golden Retriever, Persia, Holland Lop">
-                        </div>
-                        @error('nama_ras')
-                            <div class="error-message">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">
-                            <span>💾</span>
-                            <span>Simpan Data</span>
-                        </button>
-                        <a href="{{ route('admin.ras-hewan.index') }}" class="btn btn-secondary">
-                            <span>↩️</span>
-                            <span>Kembali</span>
-                        </a>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
+@section('extra-js')
     <script>
-        // Auto focus on select
-        document.getElementById('idjenis_hewan').focus();
+        // Auto focus on input
+        document.getElementById('nama_ras').focus();
 
         // Form validation before submit
-        document.querySelector('form').addEventListener('submit', function(e) {
+        document.getElementById('formCreate').addEventListener('submit', function(e) {
             const selectJenis = document.getElementById('idjenis_hewan');
             const inputRas = document.getElementById('nama_ras');
             let hasError = false;
 
             if (selectJenis.value === '') {
-                selectJenis.classList.add('error');
+                selectJenis.classList.add('is-invalid');
                 hasError = true;
             }
 
             if (inputRas.value.trim() === '') {
-                inputRas.classList.add('error');
+                inputRas.classList.add('is-invalid');
                 hasError = true;
             }
 
             if (hasError) {
                 e.preventDefault();
-                selectJenis.focus();
+                if (selectJenis.value === '') {
+                    selectJenis.focus();
+                } else {
+                    inputRas.focus();
+                }
             }
         });
 
         // Remove error class on change/input
         document.getElementById('idjenis_hewan').addEventListener('change', function() {
-            this.classList.remove('error');
+            this.classList.remove('is-invalid');
         });
 
         document.getElementById('nama_ras').addEventListener('input', function() {
-            this.classList.remove('error');
+            this.classList.remove('is-invalid');
         });
     </script>
-</body>
-</html>
+@endsection

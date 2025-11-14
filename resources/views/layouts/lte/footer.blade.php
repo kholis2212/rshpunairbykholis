@@ -1,24 +1,33 @@
 <!--begin::Footer-->
-<footer class="app-footer" style="background: linear-gradient(135deg, #023e8a, #0077b6); color: white; padding: 20px 0; border-top: 3px solid #ffc300; box-shadow: 0 -5px 20px rgba(0,0,0,0.1);">
+<footer class="app-footer" style="background: linear-gradient(135deg, #023e8a 0%, #0077b6 100%); color: white; padding: 20px 0; border-top: 4px solid #ffc300; box-shadow: 0 -8px 30px rgba(0,0,0,0.15); position: relative; overflow: hidden;">
+    <!-- Decorative Background -->
+    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 20% 50%, rgba(255, 195, 0, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(0, 180, 216, 0.1) 0%, transparent 50%); pointer-events: none;"></div>
+    
     <!--begin::Container-->
-    <div class="container-fluid">
+    <div class="container-fluid" style="position: relative; z-index: 1;">
         <div class="row align-items-center">
             <!--begin::Copyright-->
-            <div class="col-md-6 text-center text-md-start">
-                <strong style="font-weight: 700;">
-                    &copy; 2025 
-                    <a href="https://rshp.unair.ac.id" class="text-decoration-none" style="color: #ffc300; font-weight: 700;">
-                        Rumah Sakit Hewan Pendidikan UNAIR
-                    </a>
-                </strong>
-                <span style="opacity: 0.9;"> | All Rights Reserved</span>
+            <div class="col-md-6 text-center text-md-start mb-2 mb-md-0">
+                <div style="display: flex; align-items: center; gap: 12px; justify-content: center; justify-content: md-start;">
+                    <div style="width: 45px; height: 45px; background: rgba(255, 255, 255, 0.15); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; box-shadow: 0 4px 15px rgba(0,0,0,0.2); backdrop-filter: blur(10px);">
+                        🏥
+                    </div>
+                    <div style="display: flex; flex-direction: column; line-height: 1.3;">
+                        <strong style="font-weight: 800; font-size: 1rem;">
+                            &copy; 2025 RSHP UNAIR
+                        </strong>
+                        <span style="opacity: 0.9; font-size: 0.85rem; font-weight: 500;">All Rights Reserved</span>
+                    </div>
+                </div>
             </div>
             <!--end::Copyright-->
             
             <!--begin::Designer Credit-->
-            <div class="col-md-6 text-center text-md-end" style="opacity: 0.95;">
-                <span>Designed by</span> 
-                <strong style="color: #ffc300; font-weight: 700;">Kholis Abdi</strong>
+            <div class="col-md-6 text-center text-md-end">
+                <div style="display: flex; align-items: center; gap: 8px; opacity: 0.95; justify-content: center; justify-content: md-end;">
+                    <span style="font-weight: 600; font-size: 0.9rem;">Designed by</span> 
+                    <strong style="color: #ffc300; font-weight: 800; font-size: 1rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.2);">Kholis Abdi</strong>
+                </div>
             </div>
             <!--end::Designer Credit-->
         </div>
@@ -83,43 +92,32 @@
 
 <!-- Custom Scripts -->
 <script>
-    // Auto hide alerts after 5 seconds with animation
+    // Auto hide alerts after 5 seconds with smooth animation
     setTimeout(function() {
         const alerts = document.querySelectorAll('.alert');
         alerts.forEach(alert => {
-            alert.style.transition = 'all 0.4s ease';
+            alert.style.transition = 'all 0.5s ease';
             alert.style.opacity = '0';
-            alert.style.transform = 'translateY(-20px)';
+            alert.style.transform = 'translateY(-30px) scale(0.95)';
             setTimeout(() => {
                 const bsAlert = new bootstrap.Alert(alert);
                 bsAlert.close();
-            }, 400);
+            }, 500);
         });
     }, 5000);
     
-    // Initialize DataTables with custom styling
+    // Initialize DataTables with minimal features
     $(document).ready(function() {
         if ($('#dataTable').length) {
             $('#dataTable').DataTable({
                 "responsive": true,
-                "lengthChange": true,
-                "autoWidth": false,
-                "pageLength": 10,
-                "language": {
-                    "url": "//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json",
-                    "search": "🔍 Cari:",
-                    "lengthMenu": "Tampilkan _MENU_ data per halaman",
-                    "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
-                    "infoEmpty": "Tidak ada data",
-                    "infoFiltered": "(disaring dari _MAX_ total data)",
-                    "paginate": {
-                        "first": "Pertama",
-                        "last": "Terakhir",
-                        "next": "Selanjutnya",
-                        "previous": "Sebelumnya"
-                    }
-                },
-                "dom": '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>rt<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>'
+                "lengthChange": false,    // Disable dropdown "Tampilkan X data"
+                "searching": true,       /
+                "paging": false,          // Disable pagination
+                "info": false,            // Disable info "Menampilkan X sampai Y dari Z data"
+                "ordering": true,         // Keep column sorting
+                "autoWidth": false
+                // Remove language and dom configuration to disable all extra features
             });
         }
     });
@@ -138,10 +136,10 @@
         });
     });
     
-    // Animate cards on scroll
+    // Animate elements on scroll
     const observerOptions = {
         threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
+        rootMargin: '0px 0px -80px 0px'
     };
     
     const observer = new IntersectionObserver(function(entries) {
@@ -149,15 +147,35 @@
             if (entry.isIntersecting) {
                 entry.target.style.opacity = '1';
                 entry.target.style.transform = 'translateY(0)';
+                entry.target.classList.add('fade-in');
             }
         });
     }, observerOptions);
     
-    document.querySelectorAll('.card, .small-box').forEach(el => {
+    // Observe cards and boxes
+    document.querySelectorAll('.card, .small-box, .alert').forEach(el => {
         el.style.opacity = '0';
         el.style.transform = 'translateY(30px)';
-        el.style.transition = 'all 0.6s ease';
+        el.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
         observer.observe(el);
+    });
+    
+    // Add loading state for buttons
+    document.querySelectorAll('form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            const submitBtn = this.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Memproses...';
+                
+                // Re-enable after 5 seconds as fallback
+                setTimeout(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                }, 5000);
+            }
+        });
     });
 </script>
 

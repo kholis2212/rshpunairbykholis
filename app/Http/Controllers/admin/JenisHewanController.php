@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB; // Import DB untuk Query Builder
+use Illuminate\Support\Facades\DB;
 
 class JenisHewanController extends Controller
 {
@@ -13,7 +13,6 @@ class JenisHewanController extends Controller
      */
     public function index()
     {
-        // Query Builder: Ambil data dari table jenis_hewan
         $jenisHewan = DB::table('jenis_hewan')
                         ->orderBy('nama_jenis_hewan', 'asc')
                         ->get();
@@ -40,11 +39,10 @@ class JenisHewanController extends Controller
         // Format nama jenis hewan
         $namaJenisHewan = $this->formatNamaJenisHewan($validatedData['nama_jenis_hewan']);
         
-        // Query Builder: Insert data ke table jenis_hewan
+        // Query Builder: Insert data ke table jenis_hewan TANPA timestamp
         DB::table('jenis_hewan')->insert([
-            'nama_jenis_hewan' => $namaJenisHewan,
-            'created_at' => now(),
-            'updated_at' => now()
+            'nama_jenis_hewan' => $namaJenisHewan
+            // Hapus created_at dan updated_at karena kolom tidak ada di database
         ]);
         
         return redirect()->route('admin.jenis-hewan.index')
@@ -56,7 +54,6 @@ class JenisHewanController extends Controller
      */
     public function edit($id)
     {
-        // Query Builder: Ambil data berdasarkan ID
         $jenisHewan = DB::table('jenis_hewan')
                         ->where('idjenis_hewan', $id)
                         ->first();
@@ -98,12 +95,12 @@ class JenisHewanController extends Controller
         // Format nama jenis hewan
         $namaJenisHewan = $this->formatNamaJenisHewan($validatedData['nama_jenis_hewan']);
         
-        // Query Builder: Update data
+        // Query Builder: Update data TANPA updated_at
         DB::table('jenis_hewan')
             ->where('idjenis_hewan', $id)
             ->update([
-                'nama_jenis_hewan' => $namaJenisHewan,
-                'updated_at' => now()
+                'nama_jenis_hewan' => $namaJenisHewan
+                // Hapus updated_at karena kolom tidak ada di database
             ]);
         
         return redirect()->route('admin.jenis-hewan.index')
@@ -116,7 +113,6 @@ class JenisHewanController extends Controller
     public function destroy($id)
     {
         try {
-            // Query Builder: Delete data
             $deleted = DB::table('jenis_hewan')
                         ->where('idjenis_hewan', $id)
                         ->delete();
@@ -187,11 +183,11 @@ class JenisHewanController extends Controller
         return $results;
     }
     
-    // 3. Ambil 5 jenis hewan terbaru
+    // 3. Ambil 5 jenis hewan terbaru (tanpa created_at, gunakan ID sebagai referensi)
     public function getLatestJenisHewan()
     {
         $latest = DB::table('jenis_hewan')
-                    ->orderBy('created_at', 'desc')
+                    ->orderBy('idjenis_hewan', 'desc')
                     ->limit(5)
                     ->get();
         return $latest;

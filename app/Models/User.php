@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use App\Models\RoleUser;
 
 class User extends Authenticatable
 {
@@ -37,5 +36,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(RoleUser::class, 'iduser', 'iduser');
     }
-    
+
+    // Relasi many-to-many: user memiliki banyak role melalui role_user
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class, 'role_user', 'iduser', 'idrole');
+    }
 }
