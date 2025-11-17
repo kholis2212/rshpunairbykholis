@@ -2,12 +2,23 @@
 <aside class="app-sidebar shadow" data-bs-theme="dark" style="background: linear-gradient(180deg, #023e8a 0%, #0077b6 100%) !important;">
     <!--begin::Sidebar Brand-->
     <div class="sidebar-brand" style="padding: 20px; background: rgba(0, 0, 0, 0.2); border-bottom: 2px solid rgba(255, 255, 255, 0.1);">
-        <a href="{{ route('admin.dashboard-admin') }}" class="brand-link" style="display: flex; align-items: center; gap: 12px; text-decoration: none;">
+        @php
+            $brandRoute = match(Auth::user()->role) {
+                'admin' => 'admin.dashboard-admin',
+                'dokter' => 'dokter.dashboard-dokter',
+                'perawat' => 'perawat.dashboard-perawat',
+                'resepsionis' => 'resepsionis.dashboard-resepsionis',
+                'pemilik' => 'pemilik.dashboard-pemilik',
+                default => 'admin.dashboard-admin'
+            };
+        @endphp
+        <a href="{{ route($brandRoute) }}" class="brand-link" style="display: flex; align-items: center; gap: 12px; text-decoration: none;">
             <div style="width: 45px; height: 45px; background: rgba(255, 255, 255, 0.15); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; backdrop-filter: blur(10px); border: 2px solid rgba(255, 255, 255, 0.2);">
                 🏥
             </div>
             <div style="display: flex; flex-direction: column; line-height: 1.3;">
                 <span style="color: white; font-weight: 800; font-size: 1.1rem; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">RSHP UNAIR</span>
+                <span style="color: rgba(255, 255, 255, 0.8); font-size: 0.7rem; font-weight: 600;">{{ ucfirst(Auth::user()->role) }}</span>
             </div>
         </a>
     </div>
@@ -23,98 +34,209 @@
                 aria-label="Main navigation"
                 data-accordion="false">
                 
-                <!-- Dashboard -->
-                <li class="nav-item">
-                    <a href="{{ route('admin.dashboard-admin') }}" 
-                       class="nav-link {{ Request::is('admin/dashboard-admin') ? 'active' : '' }}">
-                        <div class="nav-icon">🏠</div>
-                        <p>Dashboard</p>
-                    </a>
-                </li>
-                
-                <!-- Data Master Header -->
-                <li class="nav-header">🗂️ DATA MASTER</li>
-                
-                <!-- User Management -->
-                <li class="nav-item">
-                    <a href="{{ route('admin.user.index') }}" 
-                       class="nav-link {{ Request::is('admin/user*') ? 'active' : '' }}">
-                        <div class="nav-icon">👥</div>
-                        <p>Data User</p>
-                    </a>
-                </li>
-                
-                <!-- Role Management -->
-                <li class="nav-item">
-                    <a href="{{ route('admin.role-user.index') }}" 
-                       class="nav-link {{ Request::is('admin/role-user*') ? 'active' : '' }}">
-                        <div class="nav-icon">🔐</div>
-                        <p>Manajemen Role</p>
-                    </a>
-                </li>
-                
-                <!-- Jenis Hewan -->
-                <li class="nav-item">
-                    <a href="{{ route('admin.jenis-hewan.index') }}" 
-                       class="nav-link {{ Request::is('admin/jenis-hewan*') ? 'active' : '' }}">
-                        <div class="nav-icon">🐾</div>
-                        <p>Data Jenis Hewan</p>
-                    </a>
-                </li>
-                
-                <!-- Ras Hewan -->
-                <li class="nav-item">
-                    <a href="{{ route('admin.ras-hewan.index') }}" 
-                       class="nav-link {{ Request::is('admin/ras-hewan*') ? 'active' : '' }}">
-                        <div class="nav-icon">🐕</div>
-                        <p>Data Ras Hewan</p>
-                    </a>
-                </li>
-                
-                <!-- Pemilik -->
-                <li class="nav-item">
-                    <a href="{{ route('admin.pemilik.index') }}" 
-                       class="nav-link {{ Request::is('admin/pemilik*') ? 'active' : '' }}">
-                        <div class="nav-icon">👤</div>
-                        <p>Data Pemilik</p>
-                    </a>
-                </li>
-                
-                <!-- Pet -->
-                <li class="nav-item">
-                    <a href="{{ route('admin.pet.index') }}" 
-                       class="nav-link {{ Request::is('admin/pet*') ? 'active' : '' }}">
-                        <div class="nav-icon">🐶</div>
-                        <p>Data Pet</p>
-                    </a>
-                </li>
-                
-                <!-- Kategori -->
-                <li class="nav-item">
-                    <a href="{{ route('admin.kategori.index') }}" 
-                       class="nav-link {{ Request::is('admin/kategori') && !Request::is('admin/kategori-klinis*') ? 'active' : '' }}">
-                        <div class="nav-icon">📁</div>
-                        <p>Data Kategori</p>
-                    </a>
-                </li>
-                
-                <!-- Kategori Klinis -->
-                <li class="nav-item">
-                    <a href="{{ route('admin.kategori-klinis.index') }}" 
-                       class="nav-link {{ Request::is('admin/kategori-klinis*') ? 'active' : '' }}">
-                        <div class="nav-icon">🏥</div>
-                        <p>Kategori Klinis</p>
-                    </a>
-                </li>
-                
-                <!-- Kode Tindakan Terapi -->
-                <li class="nav-item">
-                    <a href="{{ route('admin.kode-tindakan-terapi.index') }}" 
-                       class="nav-link {{ Request::is('admin/kode-tindakan-terapi*') ? 'active' : '' }}">
-                        <div class="nav-icon">💉</div>
-                        <p>Tindakan Terapi</p>
-                    </a>
-                </li>
+                @php
+                    $currentRole = Auth::user()->role;
+                @endphp
+
+                @if($currentRole === 'Admin')
+                    <!-- ADMIN SIDEBAR -->
+                    <li class="nav-item">
+                        <a href="{{ route('admin.dashboard-admin') }}" 
+                           class="nav-link {{ Request::is('admin/dashboard-admin') ? 'active' : '' }}">
+                            <div class="nav-icon">🏠</div>
+                            <p>Dashboard</p>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-header">🗂️ DATA MASTER</li>
+                    
+                    <li class="nav-item">
+                        <a href="{{ route('admin.user.index') }}" 
+                           class="nav-link {{ Request::is('admin/user*') ? 'active' : '' }}">
+                            <div class="nav-icon">👥</div>
+                            <p>Data User</p>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a href="{{ route('admin.role-user.index') }}" 
+                           class="nav-link {{ Request::is('admin/role-user*') ? 'active' : '' }}">
+                            <div class="nav-icon">🔐</div>
+                            <p>Manajemen Role</p>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a href="{{ route('admin.jenis-hewan.index') }}" 
+                           class="nav-link {{ Request::is('admin/jenis-hewan*') ? 'active' : '' }}">
+                            <div class="nav-icon">🐾</div>
+                            <p>Data Jenis Hewan</p>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a href="{{ route('admin.ras-hewan.index') }}" 
+                           class="nav-link {{ Request::is('admin/ras-hewan*') ? 'active' : '' }}">
+                            <div class="nav-icon">🐕</div>
+                            <p>Data Ras Hewan</p>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a href="{{ route('admin.pemilik.index') }}" 
+                           class="nav-link {{ Request::is('admin/pemilik*') ? 'active' : '' }}">
+                            <div class="nav-icon">👤</div>
+                            <p>Data Pemilik</p>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a href="{{ route('admin.pet.index') }}" 
+                           class="nav-link {{ Request::is('admin/pet*') ? 'active' : '' }}">
+                            <div class="nav-icon">🐶</div>
+                            <p>Data Pet</p>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a href="{{ route('admin.kategori.index') }}" 
+                           class="nav-link {{ Request::is('admin/kategori') && !Request::is('admin/kategori-klinis*') ? 'active' : '' }}">
+                            <div class="nav-icon">📁</div>
+                            <p>Data Kategori</p>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a href="{{ route('admin.kategori-klinis.index') }}" 
+                           class="nav-link {{ Request::is('admin/kategori-klinis*') ? 'active' : '' }}">
+                            <div class="nav-icon">🏥</div>
+                            <p>Kategori Klinis</p>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a href="{{ route('admin.kode-tindakan-terapi.index') }}" 
+                           class="nav-link {{ Request::is('admin/kode-tindakan-terapi*') ? 'active' : '' }}">
+                            <div class="nav-icon">💉</div>
+                            <p>Tindakan Terapi</p>
+                        </a>
+                    </li>
+
+                @elseif($currentRole === 'Dokter')
+                    <!-- DOKTER SIDEBAR -->
+                    <li class="nav-item">
+                        <a href="{{ route('dokter.dashboard-dokter') }}" 
+                           class="nav-link {{ Request::is('dokter/dashboard-dokter') ? 'active' : '' }}">
+                            <div class="nav-icon">🏠</div>
+                            <p>Dashboard</p>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-header">📋 REKAM MEDIS</li>
+                    
+                    <li class="nav-item">
+                        <a href="{{ route('dokter.rekam-medis.index') }}" 
+                           class="nav-link {{ Request::is('dokter/rekam-medis*') ? 'active' : '' }}">
+                            <div class="nav-icon">📄</div>
+                            <p>Rekam Medis Pasien</p>
+                        </a>
+                    </li>
+
+                @elseif($currentRole === 'Perawat')
+                    <!-- PERAWAT SIDEBAR -->
+                    <li class="nav-item">
+                        <a href="{{ route('perawat.dashboard-perawat') }}" 
+                           class="nav-link {{ Request::is('perawat/dashboard-perawat') ? 'active' : '' }}">
+                            <div class="nav-icon">🏠</div>
+                            <p>Dashboard</p>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-header">📋 REKAM MEDIS</li>
+                    
+                    <li class="nav-item">
+                        <a href="{{ route('perawat.rekam-medis.index') }}" 
+                           class="nav-link {{ Request::is('perawat/rekam-medis*') ? 'active' : '' }}">
+                            <div class="nav-icon">📋</div>
+                            <p>Rekam Medis</p>
+                        </a>
+                    </li>
+
+                @elseif($currentRole === 'Resepsionis')
+                    <!-- RESEPSIONIS SIDEBAR -->
+                    <li class="nav-item">
+                        <a href="{{ route('resepsionis.dashboard-resepsionis') }}" 
+                           class="nav-link {{ Request::is('resepsionis/dashboard-resepsionis') ? 'active' : '' }}">
+                            <div class="nav-icon">🏠</div>
+                            <p>Dashboard</p>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-header">📝 REGISTRASI</li>
+                    
+                    <li class="nav-item">
+                        <a href="{{ route('resepsionis.registrasi.pemilik') }}" 
+                           class="nav-link {{ Request::is('resepsionis/registrasi/pemilik*') ? 'active' : '' }}">
+                            <div class="nav-icon">👤</div>
+                            <p>Registrasi Pemilik</p>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a href="{{ route('resepsionis.registrasi.pet') }}" 
+                           class="nav-link {{ Request::is('resepsionis/registrasi/pet*') ? 'active' : '' }}">
+                            <div class="nav-icon">🐶</div>
+                            <p>Registrasi Pet</p>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-header">📅 TEMU DOKTER</li>
+                    
+                    <li class="nav-item">
+                        <a href="{{ route('resepsionis.temu-dokter.index') }}" 
+                           class="nav-link {{ Request::is('resepsionis/temu-dokter*') ? 'active' : '' }}">
+                            <div class="nav-icon">📅</div>
+                            <p>Daftar Temu Dokter</p>
+                        </a>
+                    </li>
+
+                @elseif($currentRole === 'Pemilik')
+                    <!-- PEMILIK SIDEBAR -->
+                    <li class="nav-item">
+                        <a href="{{ route('pemilik.dashboard-pemilik') }}" 
+                           class="nav-link {{ Request::is('pemilik/dashboard-pemilik') ? 'active' : '' }}">
+                            <div class="nav-icon">🏠</div>
+                            <p>Dashboard</p>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-header">🐾 DATA SAYA</li>
+                    
+                    <li class="nav-item">
+                        <a href="{{ route('pemilik.pet-saya.index') }}" 
+                           class="nav-link {{ Request::is('pemilik/pet-saya*') ? 'active' : '' }}">
+                            <div class="nav-icon">🐶</div>
+                            <p>Daftar Pet Saya</p>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a href="{{ route('pemilik.reservasi-saya.index') }}" 
+                           class="nav-link {{ Request::is('pemilik/reservasi-saya*') ? 'active' : '' }}">
+                            <div class="nav-icon">📅</div>
+                            <p>Daftar Reservasi Saya</p>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a href="{{ route('pemilik.rekam-medis-pet.index') }}" 
+                           class="nav-link {{ Request::is('pemilik/rekam-medis-pet*') ? 'active' : '' }}">
+                            <div class="nav-icon">📋</div>
+                            <p>Daftar Rekam Medis Pet</p>
+                        </a>
+                    </li>
+
+                @endif
                 
             </ul>
             <!--end::Sidebar Menu-->

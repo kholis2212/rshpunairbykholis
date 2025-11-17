@@ -10,7 +10,17 @@
                 </a>
             </li>
             <li class="nav-item d-none d-md-block">
-                <a href="{{ route('admin.dashboard-admin') }}" class="nav-link" style="color: #0077b6; font-weight: 600; transition: all 0.3s ease;"
+                @php
+                    $dashboardRoute = match(Auth::user()->role) {
+                        'admin' => 'admin.dashboard-admin',
+                        'dokter' => 'dokter.dashboard-dokter',
+                        'perawat' => 'perawat.dashboard-perawat',
+                        'resepsionis' => 'resepsionis.dashboard-resepsionis',
+                        'pemilik' => 'pemilik.dashboard-pemilik',
+                        default => 'admin.dashboard-admin'
+                    };
+                @endphp
+                <a href="{{ route($dashboardRoute) }}" class="nav-link" style="color: #0077b6; font-weight: 600; transition: all 0.3s ease;"
                    onmouseover="this.style.color='#005f8f'; this.style.transform='translateY(-2px)'"
                    onmouseout="this.style.color='#0077b6'; this.style.transform='translateY(0)'">
                     <i class="bi bi-house-heart-fill"></i> Dashboard
@@ -21,7 +31,17 @@
         
         <!--begin::Logo in Center (Desktop)-->
         <div class="d-none d-lg-flex justify-content-center flex-grow-1">
-            <a href="{{ route('admin.dashboard-admin') }}" class="navbar-brand" style="display: flex; align-items: center; gap: 15px; text-decoration: none;">
+            @php
+                $logoRoute = match(Auth::user()->role) {
+                    'admin' => 'admin.dashboard-admin',
+                    'dokter' => 'dokter.dashboard-dokter',
+                    'perawat' => 'perawat.dashboard-perawat',
+                    'resepsionis' => 'resepsionis.dashboard-resepsionis',
+                    'pemilik' => 'pemilik.dashboard-pemilik',
+                    default => 'admin.dashboard-admin'
+                };
+            @endphp
+            <a href="{{ route($logoRoute) }}" class="navbar-brand" style="display: flex; align-items: center; gap: 15px; text-decoration: none;">
                 <img src="https://rshp.unair.ac.id/wp-content/uploads/2024/06/UNIVERSITAS-AIRLANGGA-scaled.webp" 
                      alt="UNAIR Logo" 
                      style="height: 45px; background: white; padding: 5px 10px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0, 119, 182, 0.15); transition: all 0.3s ease; border: 2px solid #0077b6;"
@@ -29,7 +49,7 @@
                      onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(0, 119, 182, 0.15)'">
                 <div style="display: flex; flex-direction: column; line-height: 1.2;">
                     <span style="font-weight: 800; font-size: 1.1rem; color: #023e8a;">RSHP UNAIR</span>
-                    <span style="font-size: 0.75rem; color: #0077b6; font-weight: 600;">Sistem Manajemen</span>
+                    <span style="font-size: 0.75rem; color: #0077b6; font-weight: 600;">Sistem Manajemen - {{ ucfirst(Auth::user()->role) }}</span>
                 </div>
             </a>
         </div>
@@ -87,13 +107,24 @@
                     <!--end::Menu Body-->
                     
                     <!--begin::Menu Footer-->
-                    <li class="user-footer" style="padding: 20px; display: flex; justify-content: space-between; gap: 12px;">
-                        <a href="#" class="btn btn-default btn-flat" style="flex: 1; background: linear-gradient(135deg, #e0f2fe, #bae6fd); color: #023e8a; font-weight: 700; border-radius: 10px; padding: 12px; transition: all 0.3s ease; border: 2px solid #0077b6;"
-                           onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(0, 119, 182, 0.3)'"
-                           onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
-                            <i class="bi bi-person-circle"></i> Profile
-                        </a>
-                        <form method="POST" action="{{ route('logout') }}" style="flex: 1; margin: 0;">
+                    <li class="user-footer" style="padding: 20px; display: flex; justify-content: {{ in_array(Auth::user()->role, ['dokter', 'perawat', 'pemilik']) ? 'space-between' : 'center' }}; gap: 12px;">
+                        @if(in_array(Auth::user()->role, ['dokter', 'perawat', 'pemilik']))
+                            @php
+                                $profileRoute = match(Auth::user()->role) {
+                                    'dokter' => 'dokter.profile',
+                                    'perawat' => 'perawat.profile',
+                                    'pemilik' => 'pemilik.profile',
+                                    default => '#'
+                                };
+                            @endphp
+                            <a href="{{ route($profileRoute) }}" class="btn btn-default btn-flat" style="flex: 1; background: linear-gradient(135deg, #e0f2fe, #bae6fd); color: #023e8a; font-weight: 700; border-radius: 10px; padding: 12px; transition: all 0.3s ease; border: 2px solid #0077b6;"
+                               onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(0, 119, 182, 0.3)'"
+                               onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                                <i class="bi bi-person-circle"></i> Profile
+                            </a>
+                        @endif
+                        
+                        <form method="POST" action="{{ route('logout') }}" style="{{ in_array(Auth::user()->role, ['dokter', 'perawat', 'pemilik']) ? 'flex: 1;' : 'width: 100%;' }} margin: 0;">
                             @csrf
                             <button type="submit" class="btn btn-default btn-flat" style="width: 100%; background: linear-gradient(135deg, #ef476f, #d62839); color: white; font-weight: 700; border-radius: 10px; border: none; padding: 12px; transition: all 0.3s ease;"
                                     onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(239, 71, 111, 0.3)'"
