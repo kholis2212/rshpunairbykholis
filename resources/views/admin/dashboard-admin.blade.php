@@ -47,7 +47,7 @@
                 </div>
                 <div class="info-content">
                     <h6>Hari Ini</h6>
-                    <p>{{ now()->format('d F Y') }}</p>
+                    <p>{{ now()->format('d M Y') }}</p>
                 </div>
             </div>
         </div>

@@ -11,20 +11,22 @@ class IsDokter
     public function handle(Request $request, Closure $next)
     {
         if (!Auth::check()) {
-            return redirect('/login')->with('error', 'Silakan login terlebih dahulu.');
+            return redirect()->route('login');
         }
 
+        // Cek apakah user memiliki role dokter
         $user = Auth::user();
-        $activeRole = $user->roleUsers->where('status', 1)->first();
+        $isDokter = \Illuminate\Support\Facades\DB::table('role_user as ru')
+            ->join('role as r', 'ru.idrole', '=', 'r.idrole')
+            ->where('ru.iduser', $user->iduser)
+            ->where('r.nama_role', 'Dokter')
+            ->where('ru.status', 1)
+            ->exists();
 
-        if (!$activeRole) {
-            return redirect('/home')->with('error', 'Akun anda tidak terdaftar sebagai role aktif.');
+        if (!$isDokter) {
+            abort(403, 'Unauthorized access.');
         }
 
-        if ($activeRole->role && $activeRole->role->nama_role === 'Dokter') {
-            return $next($request);
-        }
-
-        return redirect('/home')->with('error', 'Akses ditolak. Anda bukan Dokter.');
+        return $next($request);
     }
 }

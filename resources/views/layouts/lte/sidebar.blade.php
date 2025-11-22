@@ -38,7 +38,7 @@
                     $currentRole = Auth::user()->role;
                 @endphp
 
-                @if($currentRole === 'Admin')
+                @if($currentRole === 'Administrator')
                     <!-- ADMIN SIDEBAR -->
                     <li class="nav-item">
                         <a href="{{ route('admin.dashboard-admin') }}" 
@@ -213,7 +213,7 @@
                     <li class="nav-header">🐾 DATA SAYA</li>
                     
                     <li class="nav-item">
-                        <a href="{{ route('pemilik.pet-saya.index') }}" 
+                        <a href="{{ route('pemilik.pet.index') }}" 
                            class="nav-link {{ Request::is('pemilik/pet-saya*') ? 'active' : '' }}">
                             <div class="nav-icon">🐶</div>
                             <p>Daftar Pet Saya</p>
@@ -221,7 +221,7 @@
                     </li>
                     
                     <li class="nav-item">
-                        <a href="{{ route('pemilik.reservasi-saya.index') }}" 
+                        <a href="{{ route('pemilik.reservasi.index') }}" 
                            class="nav-link {{ Request::is('pemilik/reservasi-saya*') ? 'active' : '' }}">
                             <div class="nav-icon">📅</div>
                             <p>Daftar Reservasi Saya</p>
@@ -229,7 +229,7 @@
                     </li>
                     
                     <li class="nav-item">
-                        <a href="{{ route('pemilik.rekam-medis-pet.index') }}" 
+                        <a href="{{ route('pemilik.rekam-medis.index') }}" 
                            class="nav-link {{ Request::is('pemilik/rekam-medis-pet*') ? 'active' : '' }}">
                             <div class="nav-icon">📋</div>
                             <p>Daftar Rekam Medis Pet</p>

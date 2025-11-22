@@ -17,17 +17,30 @@ class Pemilik extends Model
         'no_wa',
         'alamat',
         'iduser',
+        'nama'
     ];
 
-    // Relasi: milik satu user
+    // Relasi ke User
     public function user()
     {
         return $this->belongsTo(User::class, 'iduser', 'iduser');
     }
 
-    // Relasi: satu pemilik memiliki banyak pet
+    // Relasi ke Pet (hewan peliharaan)
     public function pets()
     {
         return $this->hasMany(Pet::class, 'idpemilik', 'idpemilik');
+    }
+
+     // Scope untuk pemilik berdasarkan user ID
+    public function scopeByUserId($query, $userId)
+    {
+        return $query->where('iduser', $userId);
+    }
+
+    // Relasi ke Reservasi
+    public function reservasi()
+    {
+        return $this->hasMany(Reservasi::class, 'idpemilik', 'idpemilik');
     }
 }

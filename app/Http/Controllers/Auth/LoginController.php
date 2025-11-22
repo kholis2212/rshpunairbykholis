@@ -13,17 +13,21 @@ class LoginController extends Controller
 {
     use AuthenticatesUsers;
 
-    protected $redirectTo = '/';
+    // HAPUS LINE INI: protected $redirectTo = '/';
 
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
-        $this->middleware('auth')->only('logout');
     }
 
     // Tampilkan form login
     public function showLoginForm()
     {
+        // Jika sudah login, redirect ke home
+        if (Auth::check()) {
+            return redirect('/home');
+        }
+        
         return view('auth.login');
     }
 
@@ -77,13 +81,16 @@ class LoginController extends Controller
             case 1:
                 return redirect()->route('admin.dashboard-admin')->with('success', 'Login berhasil!');
             case 2:
-                return redirect()->route('dokter.dashboard')->with('success', 'Login berhasil!');
+                return redirect()->route('dokter.dashboard-dokter')->with('success', 'Login berhasil!');
             case 3:
-                return redirect()->route('perawat.dashboard')->with('success', 'Login berhasil!');
+                return redirect()->route('perawat.dashboard-perawat')->with('success', 'Login berhasil!');
             case 4:
-                return redirect()->route('resepsionis.dashboard')->with('success', 'Login berhasil!');
+                return redirect()->route('resepsionis.dashboard-resepsionis')->with('success', 'Login berhasil!');
+            case 5:
+                return redirect()->route('pemilik.dashboard-pemilik')->with('success', 'Login berhasil!');
             default:
-                return redirect()->route('pemilik.dashboard')->with('success', 'Login berhasil!');
+                Auth::logout();
+                return back()->withErrors(['role' => 'Role tidak dikenali.'])->withInput();
         }
     }
 
@@ -95,6 +102,6 @@ class LoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/')->with('success', 'Logout berhasil!');
+        return redirect('/login')->with('success', 'Logout berhasil!'); // Redirect ke login setelah logout
     }
 }

@@ -12,11 +12,11 @@
             <li class="nav-item d-none d-md-block">
                 @php
                     $dashboardRoute = match(Auth::user()->role) {
-                        'admin' => 'admin.dashboard-admin',
-                        'dokter' => 'dokter.dashboard-dokter',
-                        'perawat' => 'perawat.dashboard-perawat',
-                        'resepsionis' => 'resepsionis.dashboard-resepsionis',
-                        'pemilik' => 'pemilik.dashboard-pemilik',
+                        'Administrator' => 'admin.dashboard-admin',
+                        'Dokter' => 'dokter.dashboard-dokter',
+                        'Perawat' => 'perawat.dashboard-perawat',
+                        'Resepsionis' => 'resepsionis.dashboard-resepsionis',
+                        'Pemilik' => 'pemilik.dashboard-pemilik',
                         default => 'admin.dashboard-admin'
                     };
                 @endphp
@@ -33,11 +33,11 @@
         <div class="d-none d-lg-flex justify-content-center flex-grow-1">
             @php
                 $logoRoute = match(Auth::user()->role) {
-                    'admin' => 'admin.dashboard-admin',
-                    'dokter' => 'dokter.dashboard-dokter',
-                    'perawat' => 'perawat.dashboard-perawat',
-                    'resepsionis' => 'resepsionis.dashboard-resepsionis',
-                    'pemilik' => 'pemilik.dashboard-pemilik',
+                    'Administrator' => 'admin.dashboard-admin',
+                    'Dokter' => 'dokter.dashboard-dokter',
+                    'Perawat' => 'perawat.dashboard-perawat',
+                    'Resepsionis' => 'resepsionis.dashboard-resepsionis',
+                    'Pemilik' => 'pemilik.dashboard-pemilik',
                     default => 'admin.dashboard-admin'
                 };
             @endphp
@@ -76,9 +76,9 @@
                         {{ strtoupper(substr(Auth::user()->nama, 0, 1)) }}
                     </div>
                 </a>
-                <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end" style="border-radius: 20px; border: 2px solid #0077b6; box-shadow: 0 15px 50px rgba(0, 119, 182, 0.2); min-width: 300px;">
+                <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end" style="border-radius: 20px; border: 2px solid #0077b6; box-shadow: 0 15px 50px rgba(0, 119, 182, 0.2); min-width: 300px; padding: 0; overflow: hidden;">
                     <!--begin::User Image-->
-                    <li class="user-header" style="padding: 35px 25px; background: linear-gradient(135deg, #0077b6, #0096c7);">
+                    <li class="user-header" style="padding: 35px 25px; background: linear-gradient(135deg, #0077b6, #0096c7); margin: 0;">
                         <div style="width: 90px; height: 90px; background: rgba(255,255,255,0.25); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 2.8rem; font-weight: 900; box-shadow: 0 8px 25px rgba(0,0,0,0.2); border: 4px solid rgba(255,255,255,0.3); color: white;">
                             {{ strtoupper(substr(Auth::user()->nama, 0, 1)) }}
                         </div>
@@ -92,7 +92,7 @@
                     <!--end::User Image-->
                     
                     <!--begin::Menu Body-->
-                    <li style="padding: 20px 25px; border-bottom: 1px solid rgba(0, 119, 182, 0.1);">
+                    <li style="padding: 20px 25px; border-bottom: 1px solid rgba(0, 119, 182, 0.1); margin: 0;">
                         <div style="display: flex; flex-direction: column; gap: 10px;">
                             <div style="display: flex; align-items: center; gap: 10px; color: var(--text-gray);">
                                 <i class="bi bi-envelope-fill" style="color: #0077b6; font-size: 1.1rem;"></i>
@@ -107,31 +107,37 @@
                     <!--end::Menu Body-->
                     
                     <!--begin::Menu Footer-->
-                    <li class="user-footer" style="padding: 20px; display: flex; justify-content: {{ in_array(Auth::user()->role, ['dokter', 'perawat', 'pemilik']) ? 'space-between' : 'center' }}; gap: 12px;">
-                        @if(in_array(Auth::user()->role, ['dokter', 'perawat', 'pemilik']))
-                            @php
-                                $profileRoute = match(Auth::user()->role) {
-                                    'dokter' => 'dokter.profile',
-                                    'perawat' => 'perawat.profile',
-                                    'pemilik' => 'pemilik.profile',
-                                    default => '#'
-                                };
-                            @endphp
-                            <a href="{{ route($profileRoute) }}" class="btn btn-default btn-flat" style="flex: 1; background: linear-gradient(135deg, #e0f2fe, #bae6fd); color: #023e8a; font-weight: 700; border-radius: 10px; padding: 12px; transition: all 0.3s ease; border: 2px solid #0077b6;"
-                               onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(0, 119, 182, 0.3)'"
-                               onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
-                                <i class="bi bi-person-circle"></i> Profile
-                            </a>
-                        @endif
-                        
-                        <form method="POST" action="{{ route('logout') }}" style="{{ in_array(Auth::user()->role, ['dokter', 'perawat', 'pemilik']) ? 'flex: 1;' : 'width: 100%;' }} margin: 0;">
-                            @csrf
-                            <button type="submit" class="btn btn-default btn-flat" style="width: 100%; background: linear-gradient(135deg, #ef476f, #d62839); color: white; font-weight: 700; border-radius: 10px; border: none; padding: 12px; transition: all 0.3s ease;"
-                                    onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(239, 71, 111, 0.3)'"
-                                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
-                                <i class="bi bi-box-arrow-right"></i> Logout
-                            </button>
-                        </form>
+                    <li class="user-footer" style="padding: 20px; margin: 0;">
+                        <div style="display: flex; justify-content: center; align-items: center; gap: 15px;">
+                            @if(in_array(strtolower(Auth::user()->role), ['dokter', 'perawat', 'pemilik']))
+                                @php
+                                    $profileRoute = match(Auth::user()->role) {
+                                        'Dokter' => 'dokter.profile.index',
+                                        'Perawat' => 'perawat.profile.index', 
+                                        'Pemilik' => 'pemilik.profile.index',
+                                        default => '#'
+                                    };
+                                @endphp
+                                @if($profileRoute !== '#')
+                                    <a href="{{ route($profileRoute) }}" class="btn btn-default btn-flat" style="width: 120px; height: 60px; background: linear-gradient(135deg, #e0f2fe, #bae6fd); color: #023e8a; font-weight: 700; border-radius: 10px; padding: 8px; transition: all 0.3s ease; border: 2px solid #0077b6; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;"
+                                       onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(0, 119, 182, 0.3)'"
+                                       onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                                        <i class="bi bi-person-circle" style="font-size: 1.2rem;"></i>
+                                        <span style="font-size: 0.8rem;">Profile</span>
+                                    </a>
+                                @endif
+                            @endif
+                            
+                            <form method="POST" action="{{ route('logout') }}" style="margin: 0;">
+                                @csrf
+                                <button type="submit" class="btn btn-default btn-flat" style="width: 120px; height: 60px; background: linear-gradient(135deg, #ef476f, #d62839); color: white; font-weight: 700; border-radius: 10px; border: none; padding: 8px; transition: all 0.3s ease; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;"
+                                        onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(239, 71, 111, 0.3)'"
+                                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                                    <i class="bi bi-box-arrow-right" style="font-size: 1.2rem;"></i>
+                                    <span style="font-size: 0.8rem;">Logout</span>
+                                </button>
+                            </form>
+                        </div>
                     </li>
                     <!--end::Menu Footer-->
                 </ul>

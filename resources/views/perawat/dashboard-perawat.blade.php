@@ -1,218 +1,211 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Perawat - RSHP Universitas Airlangga</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+@extends('layouts.lte.main')
 
+@section('title', 'Dashboard Perawat - RSHP UNAIR')
+
+@section('page-icon', 'heart-pulse-fill')
+@section('page-title', 'Dashboard Perawat')
+
+@section('breadcrumb')
+    <li class="breadcrumb-item active">Dashboard</li>
+@endsection
+
+@section('content')
+    <!-- Alert Success -->
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert" style="display: flex; align-items: center; gap: 15px; border-radius: 15px; border: none; box-shadow: 0 8px 25px rgba(6, 214, 160, 0.3);">
+            <i class="bi bi-check-circle-fill" style="font-size: 1.5rem;"></i>
+            <span style="font-weight: 600;">{{ session('success') }}</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
+    <!-- Welcome Card -->
+    <div class="welcome-card mb-4">
+        <div class="welcome-content">
+            <div class="welcome-icon">
+                💉
+            </div>
+            <div class="welcome-text">
+                <h1>Selamat Datang, {{ Auth::user()->nama }}!</h1>
+                <p>Anda login sebagai <strong>Perawat</strong><br>
+                Kelola rekam medis pasien dan bantu dokter dalam memberikan pelayanan terbaik untuk hewan kesayangan</p>
+                <span class="role-badge">
+                    <span>✨</span>
+                    <span>PERAWAT</span>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Info Cards -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="info-card">
+                <div class="info-icon" style="background: linear-gradient(135deg, #06d6a0, #05b589);">
+                    📅
+                </div>
+                <div class="info-content">
+                    <h6>Hari Ini</h6>
+                    <p>{{ now()->format('d M Y') }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="info-card">
+                <div class="info-icon" style="background: linear-gradient(135deg, #0077b6, #0096c7);">
+                    ⏰
+                </div>
+                <div class="info-content">
+                    <h6>Waktu</h6>
+                    <p id="current-time">{{ now()->format('H:i:s') }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="info-card">
+                <div class="info-icon" style="background: linear-gradient(135deg, #ef476f, #d62839);">
+                    📋
+                </div>
+                <div class="info-content">
+                    <h6>Total Rekam Medis</h6>
+                    <p>{{ $totalRekamMedis }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="info-card">
+                <div class="info-icon" style="background: linear-gradient(135deg, #ffa500, #ff8c00);">
+                    🏥
+                </div>
+                <div class="info-content">
+                    <h6>Rekam Medis Hari Ini</h6>
+                    <p>{{ $rekamMedisHariIni }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section Header -->
+    <div class="section-header">
+        <h2>
+            <span>💉</span>
+            <span>Fitur Perawat</span>
+        </h2>
+        <p>Kelola rekam medis dan bantu dokter dalam memberikan pelayanan terbaik</p>
+    </div>
+
+    <!-- Features Grid -->
+    <div class="data-master-grid">
+        <!-- Rekam Medis -->
+        <div class="master-card">
+            <div class="master-icon">📋</div>
+            <h3>Kelola Rekam Medis</h3>
+            <p>Buat, lihat, edit, dan kelola rekam medis pasien hewan dengan lengkap untuk mendukung proses perawatan</p>
+        </div>
+
+        <!-- Data Pasien -->
+        <div class="master-card">
+            <div class="master-icon">👥</div>
+            <h3>Data Pasien</h3>
+            <p>Akses informasi lengkap pasien hewan termasuk riwayat pemilik, jenis hewan, dan data kontak untuk koordinasi perawatan</p>
+        </div>
+
+        <!-- Asistensi Dokter -->
+        <div class="master-card">
+            <div class="master-icon">🩺</div>
+            <h3>Asistensi Dokter</h3>
+            <p>Mendukung dokter hewan dalam pemeriksaan, pengobatan, dan monitoring kondisi pasien selama proses perawatan</p>
+        </div>
+
+        <!-- Administrasi Medis -->
+        <div class="master-card">
+            <div class="master-icon">📊</div>
+            <h3>Administrasi Medis</h3>
+            <p>Mengelola dokumen medis, catatan perawatan, dan administrasi terkait pelayanan kesehatan hewan</p>
+        </div>
+
+        <!-- Monitoring Pasien -->
+        <div class="master-card">
+            <div class="master-icon">📈</div>
+            <h3>Monitoring Pasien</h3>
+            <p>Memantau perkembangan kondisi pasien hewan, mencatat perubahan gejala, dan melaporkan perkembangan kepada dokter</p>
+        </div>
+
+        <!-- Edukasi Pemilik -->
+        <div class="master-card">
+            <div class="master-icon">💬</div>
+            <h3>Edukasi Pemilik</h3>
+            <p>Memberikan informasi dan edukasi kepada pemilik hewan mengenai perawatan pasca pengobatan dan pencegahan penyakit</p>
+        </div>
+    </div>
+
+    <!-- Quick Actions Section -->
+    <div class="section-header mt-5">
+        <h2>
+            <span>⚡</span>
+            <span>Akses Cepat</span>
+        </h2>
+        <p>Menu utama untuk akses cepat ke fitur-fitur penting</p>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="quick-actions-card">
+                <div class="quick-actions-content">
+                    <div class="quick-action-item">
+                        <a href="{{ route('perawat.rekam-medis.index') }}" class="quick-action-link">
+                            <div class="quick-action-icon">📋</div>
+                            <div class="quick-action-text">
+                                <h4>Kelola Rekam Medis</h4>
+                                <p>Lihat dan kelola semua rekam medis pasien</p>
+                            </div>
+                            <div class="quick-action-arrow">→</div>
+                        </a>
+                    </div>
+                    <div class="quick-action-item">
+                        <a href="{{ route('perawat.rekam-medis.create') }}" class="quick-action-link">
+                            <div class="quick-action-icon">➕</div>
+                            <div class="quick-action-text">
+                                <h4>Tambah Rekam Medis</h4>
+                                <p>Buat rekam medis baru untuk pasien</p>
+                            </div>
+                            <div class="quick-action-arrow">→</div>
+                        </a>
+                    </div>
+                    <div class="quick-action-item">
+                        <a href="{{ route('perawat.profile.index') }}" class="quick-action-link">
+                            <div class="quick-action-icon">👤</div>
+                            <div class="quick-action-text">
+                                <h4>Profile Saya</h4>
+                                <p>Kelola informasi profile Anda</p>
+                            </div>
+                            <div class="quick-action-arrow">→</div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
         :root {
             --primary: #0077b6;
             --primary-dark: #023e8a;
-            --secondary: #00b4d8;
-            --accent: #ffc300;
+            --secondary: #0096c7;
             --success: #06d6a0;
+            --warning: #ffa500;
             --danger: #ef476f;
             --light-bg: #f8fbff;
-            --white: #ffffff;
             --text-dark: #1a1a2e;
             --text-gray: #4a5568;
         }
 
-        body {
-            font-family: 'Poppins', 'Segoe UI Emoji', 'Noto Color Emoji', 'Apple Color Emoji', sans-serif;
-            background: linear-gradient(135deg, #0077b6 0%, #023e8a 100%);
-            min-height: 100vh;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        body::before {
-            content: "";
-            position: fixed;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: 
-                radial-gradient(circle at 20% 50%, rgba(0, 180, 216, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(255, 195, 0, 0.1) 0%, transparent 50%);
-            animation: rotate 20s linear infinite;
-            z-index: 0;
-        }
-
-        @keyframes rotate {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .shape {
-            position: fixed;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.05);
-            animation: float 15s ease-in-out infinite;
-            z-index: 0;
-        }
-
-        .shape-1 {
-            width: 300px;
-            height: 300px;
-            top: 10%;
-            left: 10%;
-            animation-delay: 0s;
-        }
-
-        .shape-2 {
-            width: 200px;
-            height: 200px;
-            bottom: 20%;
-            right: 15%;
-            animation-delay: 2s;
-        }
-
-        .shape-3 {
-            width: 150px;
-            height: 150px;
-            top: 60%;
-            left: 70%;
-            animation-delay: 4s;
-        }
-
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(0) scale(1);
-            }
-            50% {
-                transform: translateY(-30px) scale(1.05);
-            }
-        }
-
-        .navbar {
-            position: relative;
-            z-index: 100;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 50px;
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(10px);
-            border-bottom: 3px solid var(--accent);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-        }
-
-        .navbar-brand {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            text-decoration: none;
-        }
-
-        .navbar-brand img {
-            height: 50px;
-            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.2));
-            transition: transform 0.3s ease;
-        }
-
-        .navbar-brand:hover img {
-            transform: scale(1.05);
-        }
-
-        .navbar-brand-text {
-            color: var(--primary-dark);
-            font-size: 1.2rem;
-            font-weight: 700;
-        }
-
-        .navbar-menu {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px 20px;
-            background: var(--light-bg);
-            border-radius: 50px;
-            border: 2px solid var(--primary);
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--white);
-            font-weight: 700;
-            font-size: 1.1rem;
-        }
-
-        .user-details {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .user-name {
-            font-weight: 600;
-            color: var(--primary-dark);
-            font-size: 0.9rem;
-            line-height: 1.2;
-        }
-
-        .user-role {
-            font-size: 0.75rem;
-            color: var(--text-gray);
-            text-transform: uppercase;
-        }
-
-        .logout-btn {
-            padding: 10px 25px;
-            background: linear-gradient(135deg, var(--danger) 0%, #d62839 100%);
-            color: var(--white);
-            border: none;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(239, 71, 111, 0.3);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        .logout-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(239, 71, 111, 0.5);
-        }
-
-        .dashboard-container {
-            padding: 40px 30px;
-            max-width: 1400px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 10;
-        }
-
+        /* Welcome Card */
         .welcome-card {
             background: var(--white);
             border-radius: 25px;
             padding: 45px;
-            margin-bottom: 40px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 20px 60px rgba(0, 119, 182, 0.2);
             position: relative;
             overflow: hidden;
             border: 3px solid transparent;
@@ -228,7 +221,7 @@
             bottom: 0;
             border-radius: 25px;
             padding: 3px;
-            background: linear-gradient(135deg, var(--accent), var(--secondary), var(--primary));
+            background: linear-gradient(135deg, #0077b6, #0096c7, #00b4d8);
             -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
             -webkit-mask-composite: xor;
             mask-composite: exclude;
@@ -242,7 +235,7 @@
             right: -100px;
             width: 300px;
             height: 300px;
-            background: linear-gradient(135deg, rgba(0, 119, 182, 0.1), rgba(255, 195, 0, 0.1));
+            background: linear-gradient(135deg, rgba(0, 119, 182, 0.15), rgba(0, 150, 199, 0.15));
             border-radius: 50%;
             animation: pulse 4s ease-in-out infinite;
         }
@@ -250,11 +243,11 @@
         @keyframes pulse {
             0%, 100% {
                 transform: scale(1);
-                opacity: 0.5;
+                opacity: 0.6;
             }
             50% {
                 transform: scale(1.1);
-                opacity: 0.3;
+                opacity: 0.4;
             }
         }
 
@@ -269,16 +262,15 @@
         .welcome-icon {
             width: 100px;
             height: 100px;
-            background: var(--white);
+            background: linear-gradient(135deg, #0077b6, #0096c7);
             border-radius: 25px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 3.5rem;
+            font-size: 3rem;
             flex-shrink: 0;
-            box-shadow: 0 10px 30px rgba(0, 119, 182, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 119, 182, 0.4);
             animation: bounce 2s ease-in-out infinite;
-            border: 3px solid var(--primary);
         }
 
         @keyframes bounce {
@@ -290,7 +282,7 @@
             font-size: 2.2rem;
             font-weight: 800;
             margin-bottom: 10px;
-            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            background: linear-gradient(135deg, #023e8a, #0077b6);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -307,25 +299,77 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: linear-gradient(135deg, var(--accent), #ffdb4d);
-            color: var(--primary-dark);
+            background: linear-gradient(135deg, #0077b6, #0096c7);
+            color: white;
             padding: 10px 25px;
             border-radius: 50px;
             font-weight: 700;
             font-size: 0.9rem;
-            box-shadow: 0 5px 20px rgba(255, 195, 0, 0.4);
+            box-shadow: 0 5px 20px rgba(0, 119, 182, 0.4);
         }
 
+        /* Info Cards */
+        .info-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 30px rgba(0, 119, 182, 0.12);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .info-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 119, 182, 0.2);
+            border-color: #0077b6;
+        }
+
+        .info-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            flex-shrink: 0;
+            box-shadow: 0 5px 15px rgba(0, 119, 182, 0.3);
+        }
+
+        .info-content h6 {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-gray);
+            margin: 0 0 5px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-content p {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #023e8a;
+            margin: 0;
+        }
+
+        /* Section Header */
         .section-header {
             margin-bottom: 35px;
             text-align: center;
+            background: linear-gradient(135deg, rgba(0, 119, 182, 0.05), rgba(0, 150, 199, 0.05));
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(0, 119, 182, 0.1);
+            border: 2px solid rgba(0, 119, 182, 0.1);
         }
 
         .section-header h2 {
             font-size: 2rem;
             font-weight: 800;
-            color: var(--white);
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            color: #023e8a;
             margin-bottom: 10px;
             display: flex;
             align-items: center;
@@ -334,51 +378,52 @@
         }
 
         .section-header p {
-            color: rgba(255, 255, 255, 0.9);
+            color: var(--text-gray);
             font-size: 1.05rem;
-            font-weight: 300;
+            font-weight: 500;
+            margin: 0;
         }
 
-        .menu-grid {
+        /* Data Master Grid */
+        .data-master-grid {
             display: grid;
-            grid-template-columns: 1fr;
-            gap: 30px;
-            margin-top: 30px;
-            max-width: 700px;
-            margin-left: auto;
-            margin-right: auto;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
         }
 
-        .menu-card {
+        /* Master Card */
+        .master-card {
             background: var(--white);
-            border-radius: 25px;
-            padding: 45px;
+            border-radius: 20px;
+            padding: 30px;
             text-decoration: none;
             color: var(--text-dark);
-            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12);
+            box-shadow: 0 10px 40px rgba(0, 119, 182, 0.12);
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 35px;
+            text-align: center;
             border: 2px solid transparent;
+            cursor: default;
         }
 
-        .menu-card::before {
+        .master-card::before {
             content: "";
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
-            height: 6px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+            height: 5px;
+            background: linear-gradient(90deg, #0077b6, #0096c7, #00b4d8);
             transform: scaleX(0);
             transform-origin: left;
             transition: transform 0.4s ease;
         }
 
-        .menu-card::after {
+        .master-card::after {
             content: "";
             position: absolute;
             top: 50%;
@@ -386,137 +431,155 @@
             transform: translate(-50%, -50%);
             width: 0;
             height: 0;
-            background: radial-gradient(circle, rgba(0, 119, 182, 0.08), transparent);
+            background: radial-gradient(circle, rgba(0, 119, 182, 0.1), transparent);
             border-radius: 50%;
             transition: width 0.5s ease, height 0.5s ease;
         }
 
-        .menu-card:hover::before {
+        .master-card:hover::before {
             transform: scaleX(1);
         }
 
-        .menu-card:hover::after {
-            width: 600px;
-            height: 600px;
+        .master-card:hover::after {
+            width: 400px;
+            height: 400px;
         }
 
-        .menu-card:hover {
-            transform: translateY(-12px) scale(1.02);
-            box-shadow: 0 25px 70px rgba(0, 119, 182, 0.25);
-            border-color: var(--primary);
+        .master-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 60px rgba(0, 119, 182, 0.25);
+            border-color: #0077b6;
         }
 
-        .menu-icon {
-            width: 90px;
-            height: 90px;
-            background: var(--white);
-            border-radius: 22px;
+        .master-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #0077b6, #0096c7);
+            border-radius: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 3rem;
-            flex-shrink: 0;
-            box-shadow: 0 10px 30px rgba(0, 119, 182, 0.2);
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 25px rgba(0, 119, 182, 0.35);
             transition: all 0.4s ease;
             position: relative;
             z-index: 2;
-            border: 3px solid var(--primary);
         }
 
-        .menu-card:hover .menu-icon {
+        .master-card:hover .master-icon {
             transform: scale(1.15) rotate(5deg);
-            box-shadow: 0 15px 40px rgba(0, 119, 182, 0.4);
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            box-shadow: 0 12px 35px rgba(0, 119, 182, 0.5);
+            background: linear-gradient(135deg, #005f8f, #0077b6);
         }
 
-        .menu-content {
-            flex: 1;
+        .master-card h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #023e8a;
+            margin-bottom: 10px;
             position: relative;
             z-index: 2;
-        }
-
-        .menu-card h3 {
-            font-size: 1.6rem;
-            font-weight: 700;
-            color: var(--primary-dark);
-            margin-bottom: 12px;
             transition: color 0.3s ease;
         }
 
-        .menu-card:hover h3 {
-            color: var(--primary);
+        .master-card:hover h3 {
+            color: #0077b6;
         }
 
-        .menu-card p {
-            font-size: 1rem;
+        .master-card p {
+            font-size: 0.85rem;
             color: var(--text-gray);
-            line-height: 1.7;
+            line-height: 1.6;
+            position: relative;
+            z-index: 2;
             margin-bottom: 0;
         }
 
-        .menu-arrow {
-            position: absolute;
-            bottom: 30px;
-            right: 30px;
-            width: 50px;
-            height: 50px;
-            background: var(--light-bg);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            color: var(--primary);
-            transition: all 0.3s ease;
-            z-index: 2;
+        /* Quick Actions Card */
+        .quick-actions-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 119, 182, 0.12);
+            border: 2px solid rgba(0, 119, 182, 0.1);
         }
 
-        .menu-card:hover .menu-arrow {
-            background: var(--primary);
-            color: var(--white);
+        .quick-action-item {
+            margin-bottom: 15px;
+        }
+
+        .quick-action-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .quick-action-link {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+            text-decoration: none;
+            color: var(--text-dark);
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .quick-action-link:hover {
+            background: linear-gradient(135deg, rgba(0, 119, 182, 0.05), rgba(0, 150, 199, 0.05));
+            border-color: #0077b6;
             transform: translateX(5px);
         }
 
-        .alert-success {
-            background: linear-gradient(135deg, #06d6a0 0%, #05b589 100%);
-            color: white;
-            padding: 18px 25px;
-            margin-bottom: 30px;
+        .quick-action-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #0077b6, #0096c7);
             border-radius: 15px;
-            font-size: 0.95rem;
             display: flex;
             align-items: center;
-            gap: 12px;
-            box-shadow: 0 8px 25px rgba(6, 214, 160, 0.3);
-            animation: slideDown 0.5s ease;
+            justify-content: center;
+            font-size: 1.8rem;
+            flex-shrink: 0;
+            box-shadow: 0 5px 15px rgba(0, 119, 182, 0.3);
         }
 
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
+        .quick-action-text {
+            flex: 1;
+        }
+
+        .quick-action-text h4 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #023e8a;
+            margin-bottom: 5px;
+        }
+
+        .quick-action-text p {
+            font-size: 0.9rem;
+            color: var(--text-gray);
+            margin: 0;
+        }
+
+        .quick-action-arrow {
+            color: #0077b6;
+            font-size: 1.5rem;
+            font-weight: 700;
+            transition: transform 0.3s ease;
+        }
+
+        .quick-action-link:hover .quick-action-arrow {
+            transform: translateX(5px);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .data-master-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
 
-        .alert-success::before {
-            content: "✓";
-            font-size: 1.4rem;
-            font-weight: bold;
-        }
-
-        @media (max-width: 968px) {
-            .navbar {
-                padding: 15px 30px;
-            }
-
-            .navbar-brand-text {
-                display: none;
-            }
-
+        @media (max-width: 768px) {
             .welcome-content {
                 flex-direction: column;
                 text-align: center;
@@ -526,128 +589,53 @@
                 font-size: 1.8rem;
             }
 
+            .data-master-grid {
+                grid-template-columns: 1fr;
+            }
+
             .section-header h2 {
                 font-size: 1.6rem;
+                flex-direction: column;
             }
 
-            .user-details {
-                display: none;
-            }
-
-            .menu-card {
+            .quick-action-link {
                 flex-direction: column;
                 text-align: center;
-                padding: 35px;
-            }
-
-            .menu-arrow {
-                position: static;
-                margin-top: 20px;
             }
         }
 
-        @media (max-width: 640px) {
-            .navbar {
-                padding: 15px 20px;
-            }
-
-            .dashboard-container {
-                padding: 30px 20px;
-            }
-
+        @media (max-width: 576px) {
             .welcome-card {
                 padding: 30px 25px;
             }
 
-            .user-info {
-                padding: 8px 15px;
-            }
-
             .section-header h2 {
                 font-size: 1.4rem;
-                flex-direction: column;
             }
 
-            .menu-card {
-                padding: 30px 20px;
+            .master-card {
+                padding: 25px 20px;
+            }
+
+            .quick-actions-card {
+                padding: 20px 15px;
             }
         }
     </style>
-</head>
-<body>
-    <div class="shape shape-1"></div>
-    <div class="shape shape-2"></div>
-    <div class="shape shape-3"></div>
+@endsection
 
-    <nav class="navbar">
-        <a href="{{ url('/dashboard') }}" class="navbar-brand">
-            <img src="https://rshp.unair.ac.id/wp-content/uploads/2024/06/UNIVERSITAS-AIRLANGGA-scaled.webp" alt="Logo UNAIR">
-            <span class="navbar-brand-text">RSHP UNAIR</span>
-        </a>
-        
-        <div class="navbar-menu">
-            <div class="user-info">
-                <div class="user-avatar">
-                    {{ strtoupper(substr(Auth::user()->nama, 0, 1)) }}
-                </div>
-                <div class="user-details">
-                    <span class="user-name">{{ Auth::user()->nama }}</span>
-                    <span class="user-role">{{ Auth::user()->role }}</span>
-                </div>
-            </div>
-            
-            <form method="POST" action="{{ route('logout') }}" style="margin: 0;">
-                @csrf
-                <button type="submit" class="logout-btn">
-                    <span>🚪</span>
-                    <span>Logout</span>
-                </button>
-            </form>
-        </div>
-    </nav>
-
-    <div class="dashboard-container">
-        <div class="welcome-card">
-            <div class="welcome-content">
-                <div class="welcome-icon">
-                    💉
-                </div>
-                <div class="welcome-text">
-                    <h1>Selamat Datang, {{ Auth::user()->nama }}!</h1>
-                    <p>Anda login sebagai <strong>Perawat ({{ Auth::user()->role }})</strong><br>
-                    Kelola rekam medis pasien dan tindakan terapi dengan akses penuh</p>
-                    <span class="role-badge">
-                        <span>✨</span>
-                        <span>{{ strtoupper(Auth::user()->role) }}</span>
-                    </span>
-                </div>
-            </div>
-        </div>
-
-        @if(session('status'))
-            <div class="alert-success">
-                <span>{{ session('status') }}</span>
-            </div>
-        @endif
-
-        <div class="section-header">
-            <h2>
-                <span>📝</span>
-                <span>Manajemen Rekam Medis</span>
-            </h2>
-            <p>Kelola data rekam medis dan tindakan terapi pasien hewan</p>
-        </div>
-
-        <div class="menu-grid">
-            <a href="{{ route('perawat.rekam-medis.index') }}" class="menu-card">
-                <div class="menu-icon">📋</div>
-                <div class="menu-content">
-                    <h3>Daftar Rekam Medis</h3>
-                    <p>Kelola rekam medis pasien dan tindakan terapi dengan full akses CRUD (Create, Read, Update, Delete) untuk dokumentasi lengkap</p>
-                </div>
-                <div class="menu-arrow">→</div>
-            </a>
-        </div>
-    </div>
-</body>
-</html>
+@section('extra-js')
+    <script>
+        // Update current time every second
+        setInterval(function() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const timeElement = document.getElementById('current-time');
+            if (timeElement) {
+                timeElement.textContent = `${hours}:${minutes}:${seconds}`;
+            }
+        }, 1000);
+    </script>
+@endsection
